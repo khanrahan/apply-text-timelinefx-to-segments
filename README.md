@@ -1,4 +1,4 @@
-# Continue Folder
+# Apply Text TimelineFX to Segments
 
 Plugin for [Autodesk Flame software](http://www.autodesk.com/products/flame).
 
