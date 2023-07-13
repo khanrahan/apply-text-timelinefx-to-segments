@@ -23,7 +23,7 @@ Put simply... its for loading text setups in bulk!
 - `Year`
 
 ## Installation
-**Tested & working on 2021.1 & 2024 PR182**
+**Tested & working on 2021.1 & 2024.1 PR182**
 
 To make available to all users on the workstation, copy `continue_folder.py` to `/opt/Autodesk/shared/python`
 
