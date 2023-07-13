@@ -1,9 +1,14 @@
 '''
-Apply Text TimelineFX to Segments
+Script Name: Apply Text TimelineFX to Segments
+Written By: Kieran Hanrahan
 
-URL:
+Script Version: 1.1.0
+Flame Version: 2021.1
 
-    http://github.com/khanrahan/apply-text-timelinefx-to-segments
+URL: http://github.com/khanrahan/apply-text-timelinefx-to-segments
+
+Creation Date: 06.23.23
+Update Date: 07.09.23
 
 Description:
 
@@ -39,7 +44,7 @@ from PySide2 import QtGui
 from PySide2 import QtWidgets
 
 TITLE = 'Apply Text TimelineFX to Segments'
-VERSION_INFO = (1, 0, 0)
+VERSION_INFO = (1, 1, 0)
 VERSION = '.'.join([str(num) for num in VERSION_INFO])
 TITLE_VERSION = '{} v{}'.format(TITLE, VERSION)
 MESSAGE_PREFIX = '[PYTHON HOOK]'
@@ -209,6 +214,204 @@ class FlameLineEdit(QtWidgets.QLineEdit):
                 color: rgb(170, 170, 170);
                 background-color: rgb(71, 71, 71);
                 border: none}''')
+
+
+class FlameProgressWindow(QtWidgets.QDialog):
+    '''
+    Custom Qt Flame Progress Window
+
+    FlameProgressWindow(window_title, num_to_do[, text=None, enable_done_button=False,
+                        parent=None])
+
+    window_title: text shown in top left of window ie. Rendering... [str]
+    num_to_do: total number of operations to do [int]
+    text: message to show in window [str]
+    enable_cancel_button: enable cancel button, default is False [bool]
+
+    Examples:
+
+        To create window:
+
+            self.progress_window = FlameProgressWindow(
+                'Rendering...', 10,
+                text='Rendering: Batch 1 of 5',
+                enable_done_button=True)
+
+        To update progress bar:
+
+            self.progress_window.set_progress_value(number_of_things_done)
+
+        To enable or disable done button - True or False:
+
+            self.progress_window.enable_done_button(True)
+    '''
+
+    def __init__(
+            self,
+            window_title,
+            num_to_do,
+            text='',
+            window_bar_color='blue',
+            enable_cancel_button=True,
+            parent=None):
+
+        super(FlameProgressWindow, self).__init__()
+
+        self.cancelled = False
+
+        # Check argument types
+
+        if not isinstance(window_title, str):
+            raise TypeError('FlameProgressWindow: window_title must be a string')
+        if not isinstance(num_to_do, int):
+            raise TypeError('FlameProgressWindow: num_to_do must be an integer')
+        if not isinstance(text, str):
+            raise TypeError('FlameProgressWindow: text must be a string')
+        if not isinstance(enable_cancel_button, bool):
+            raise TypeError('FlameProgressWindow: enable_done_button must be a boolean')
+        if window_bar_color not in ['blue', 'red', 'green', 'yellow', 'gray', 'teal']:
+            raise ValueError('FlameWindow: Window Bar Color must be one of: '
+                             'blue, red, green, yellow, gray, teal.')
+
+        self.window_bar_color = window_bar_color
+
+        # Build window
+
+        # Mac needs this to close the window
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+
+        self.setWindowFlags(
+                QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint)
+        self.setMinimumSize(QtCore.QSize(500, 330))
+        self.setMaximumSize(QtCore.QSize(500, 330))
+        self.setStyleSheet('background-color: rgb(36, 36, 36)')
+
+        resolution = QtWidgets.QDesktopWidget().screenGeometry()
+        self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
+                  (resolution.height() / 2) - (self.frameSize().height() / 2))
+
+        self.setParent(parent)
+
+        self.grid = QtWidgets.QGridLayout()
+
+        self.main_label = FlameLabel(window_title, label_width=500)
+        self.main_label.setStyleSheet('''
+            color: rgb(154, 154, 154);
+            font: 18px "Discreet"''')
+        self.message_text_edit = QtWidgets.QTextEdit('')
+        self.message_text_edit.setDisabled(True)
+        self.message_text_edit.setStyleSheet('''
+            QTextEdit {
+                color: rgb(154, 154, 154);
+                background-color: rgb(36, 36, 36);
+                selection-color: rgb(190, 190, 190);
+                selection-background-color: rgb(36, 36, 36);
+                border: none;
+                padding-left: 20px;
+                padding-right: 20px;
+                font: 12px "Discreet"}''')
+        self.message_text_edit.setText(text)
+
+        # Progress bar
+
+        self.progress_bar = QtWidgets.QProgressBar()
+        self.progress_bar.setMaximum(num_to_do)
+        self.progress_bar.setMaximumHeight(5)
+        self.progress_bar.setTextVisible(False)
+        self.progress_bar.setStyleSheet('''
+            QProgressBar {
+                color: rgb(154, 154, 154);
+                background-color: rgb(45, 45, 45);
+                font: 14px "Discreet";
+                border: none}
+            QProgressBar:chunk {
+                background-color: rgb(0, 110, 176)}''')
+
+        self.cancel_button = FlameButton(
+                'Cancel',
+                self.cancel,
+                button_color='normal',
+                button_width=110)
+        self.cancel_button.setEnabled(enable_cancel_button)
+        self.cancel_button.setVisible(enable_cancel_button)
+
+        # Layout
+
+        self.grid.addWidget(self.main_label, 0, 0)
+        self.grid.setRowMinimumHeight(1, 30)
+        self.grid.addWidget(self.message_text_edit, 2, 0, 1, 4)
+        self.grid.addWidget(self.progress_bar, 8, 0, 1, 7)
+        self.grid.setRowMinimumHeight(9, 30)
+        self.grid.addWidget(self.cancel_button, 10, 6)
+        self.grid.setRowMinimumHeight(11, 30)
+
+        self.setLayout(self.grid)
+        self.show()
+
+    def set_text(self, text):
+
+        self.message_text_edit.setText(text)
+
+    def set_progress_value(self, value):
+
+        self.progress_bar.setValue(value)
+
+    def enable_cancel_button(self, value):
+
+        if value:
+            self.cancel_button.setEnabled(True)
+        else:
+            self.cancel_button.setEnabled(False)
+
+    def cancel(self):
+
+        self.cancelled = True
+        self.close()
+
+    def paintEvent(self, event):
+
+        painter = QtGui.QPainter(self)
+        if self.window_bar_color == 'blue':
+            bar_color = QtGui.QColor(0, 110, 176)
+        elif self.window_bar_color == 'red':
+            bar_color = QtGui.QColor(200, 29, 29)
+        elif self.window_bar_color == 'green':
+            bar_color = QtGui.QColor(0, 180, 13)
+        elif self.window_bar_color == 'yellow':
+            bar_color = QtGui.QColor(251, 181, 73)
+        elif self.window_bar_color == 'gray':
+            bar_color = QtGui.QColor(71, 71, 71)
+        elif self.window_bar_color == 'teal':
+            bar_color = QtGui.QColor(14, 110, 106)
+
+        # painter.setPen(QtGui.QPen(QtGui.QColor(71, 71, 71), .5, QtCore.Qt.SolidLine))
+        # painter.drawLine(0, 40, 500, 40)
+
+        # Draw line below title that goes from side bar color to grey
+
+        gradient = QtGui.QLinearGradient(0, 0, 500, 40)
+        gradient.setColorAt(1, QtGui.QColor(71, 71, 71))
+        gradient.setColorAt(0, bar_color)
+        painter.setPen(QtGui.QPen(gradient, .5, QtCore.Qt.SolidLine))
+        painter.drawLine(0, 40, 500, 40)
+
+        # Draw bar on left side of window
+
+        painter.setPen(QtGui.QPen(bar_color, 6, QtCore.Qt.SolidLine))
+        painter.drawLine(0, 0, 0, 330)
+
+    def mousePressEvent(self, event):
+
+        self.oldPosition = event.globalPos()
+
+    def mouseMoveEvent(self, event):
+
+        try:
+            delta = QtCore.QPoint(event.globalPos() - self.oldPosition)
+            self.move(self.x() + delta.x(), self.y() + delta.y())
+            self.oldPosition = event.globalPos()
+        except:
+            pass
 
 
 class FlameTokenPushButton(QtWidgets.QPushButton):
@@ -528,12 +731,31 @@ class FindSegmentApplyText(object):
 
             row_data = self.segments_table.get_selected_row_data()
 
+            self.progress_window = FlameProgressWindow(
+                    'Progress', len(row_data))
+
             for row in row_data:
+                if self.progress_window.cancelled:
+                    break
+
                 self.message('Proceeding with {} in {} at {}'.format(
                     row[2], row[1], row[3]))
+
+                self.progress_window.set_text(
+                        'Apply Text TimlineFX to {} in {} at {}'.format(
+                             row[2], row[1], row[3]))
+
                 self.apply_text_fx_to_segment(self.segments[int(row[0]) - 1], row[5])
 
-            self.message('Done!')
+                self.progress_window.set_progress_value(
+                        row_data.index(row) + 1)
+
+            self.progress_window.close()
+
+            if self.progress_window.cancelled:
+                self.message('Cancelled!')
+            else:
+                self.message('Done!')
 
         def cancel_button():
             '''Cancel python hook and close UI.'''
