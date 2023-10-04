@@ -2,7 +2,7 @@
 Script Name: Apply Text TimelineFX to Segments
 Written By: Kieran Hanrahan
 
-Script Version: 1.2.0
+Script Version: 1.2.1
 Flame Version: 2021.1
 
 URL: http://github.com/khanrahan/apply-text-timelinefx-to-segments
@@ -44,7 +44,7 @@ from PySide2 import QtGui
 from PySide2 import QtWidgets
 
 TITLE = 'Apply Text TimelineFX to Segments'
-VERSION_INFO = (1, 2, 0)
+VERSION_INFO = (1, 2, 1)
 VERSION = '.'.join([str(num) for num in VERSION_INFO])
 TITLE_VERSION = '{} v{}'.format(TITLE, VERSION)
 MESSAGE_PREFIX = '[PYTHON HOOK]'
@@ -653,10 +653,13 @@ class FindSegmentApplyText(object):
             for version in sequence.versions:
                 for track in version.tracks:
                     for segment in track.segments:
-                        if segment.type == 'Gap':  # too many gaps in the results IMHO
-                            pass
-                        else:
-                            self.segments.append(segment)
+                        # Skip hidden segments.  Would cause crash when adding TextFX.
+                        if segment.hidden.get_value() is True:
+                            continue
+                        # Skip gaps.  Clutters the segments listed in the table.
+                        if segment.type == 'Gap':
+                            continue
+                        self.segments.append(segment)
 
         self.message('Found {} segments'.format(len(self.segments)))
 
