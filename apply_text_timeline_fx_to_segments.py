@@ -2,13 +2,13 @@
 Script Name: Apply Text TimelineFX to Segments
 Written By: Kieran Hanrahan
 
-Script Version: 1.1.0
+Script Version: 1.2.0
 Flame Version: 2021.1
 
 URL: http://github.com/khanrahan/apply-text-timelinefx-to-segments
 
 Creation Date: 06.23.23
-Update Date: 07.09.23
+Update Date: 10.04.23
 
 Description:
 
@@ -44,7 +44,7 @@ from PySide2 import QtGui
 from PySide2 import QtWidgets
 
 TITLE = 'Apply Text TimelineFX to Segments'
-VERSION_INFO = (1, 1, 0)
+VERSION_INFO = (1, 2, 0)
 VERSION = '.'.join([str(num) for num in VERSION_INFO])
 TITLE_VERSION = '{} v{}'.format(TITLE, VERSION)
 MESSAGE_PREFIX = '[PYTHON HOOK]'
@@ -757,11 +757,11 @@ class FindSegmentApplyText(object):
             else:
                 self.message('Done!')
 
-        def cancel_button():
-            '''Cancel python hook and close UI.'''
+        def close_button():
+            '''Close the window.'''
 
             self.window.close()
-            self.message('Cancelled!')
+            self.message('Window closed!')
 
         def filter_table():
             '''Updates the table when anything is typed in the Find bar.'''
@@ -863,7 +863,7 @@ class FindSegmentApplyText(object):
         self.ok_btn = FlameButton('Ok', okay_button, button_color='blue')
         self.ok_btn.setAutoDefault(True)  # doesnt make Enter key work
 
-        self.cancel_btn = FlameButton('Cancel', cancel_button)
+        self.cancel_btn = FlameButton('Close', close_button)
 
         # Layout
         self.grid = QtWidgets.QGridLayout()
