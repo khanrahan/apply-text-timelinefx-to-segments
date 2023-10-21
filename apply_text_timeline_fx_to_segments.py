@@ -2,13 +2,13 @@
 Script Name: Apply Text TimelineFX to Segments
 Written By: Kieran Hanrahan
 
-Script Version: 1.2.2
+Script Version: 1.2.3
 Flame Version: 2021.1
 
 URL: http://github.com/khanrahan/apply-text-timelinefx-to-segments
 
 Creation Date: 06.23.23
-Update Date: 10.06.23
+Update Date: 10.21.23
 
 Description:
 
@@ -44,7 +44,7 @@ from PySide2 import QtGui
 from PySide2 import QtWidgets
 
 TITLE = 'Apply Text TimelineFX to Segments'
-VERSION_INFO = (1, 2, 2)
+VERSION_INFO = (1, 2, 3)
 VERSION = '.'.join([str(num) for num in VERSION_INFO])
 TITLE_VERSION = '{} v{}'.format(TITLE, VERSION)
 MESSAGE_PREFIX = '[PYTHON HOOK]'
@@ -856,6 +856,7 @@ class FindSegmentApplyText(object):
 
         # Table
         self.segments_table = FlameTableWidget(self.table_columns)
+        self.segments_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         populate_table()
 
         # Buttons
