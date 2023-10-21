@@ -2,7 +2,7 @@
 Script Name: Apply Text TimelineFX to Segments
 Written By: Kieran Hanrahan
 
-Script Version: 1.2.3
+Script Version: 1.3.3
 Flame Version: 2021.1
 
 URL: http://github.com/khanrahan/apply-text-timelinefx-to-segments
@@ -37,6 +37,7 @@ from __future__ import print_function
 import os
 import re
 import datetime as dt
+import xml.etree.ElementTree as et
 from functools import partial
 import flame
 from PySide2 import QtCore
@@ -44,13 +45,14 @@ from PySide2 import QtGui
 from PySide2 import QtWidgets
 
 TITLE = 'Apply Text TimelineFX to Segments'
-VERSION_INFO = (1, 2, 3)
+VERSION_INFO = (1, 3, 3)
 VERSION = '.'.join([str(num) for num in VERSION_INFO])
 TITLE_VERSION = '{} v{}'.format(TITLE, VERSION)
 MESSAGE_PREFIX = '[PYTHON HOOK]'
 
 SETUPS = '/opt/Autodesk/project'
 DEFAULT_PATTERN = '/opt/Autodesk/project/<project>/text/flame/<name>.ttg'
+XML = 'apply_text_timeline_fx_to_segments.xml'
 
 
 class FlameButton(QtWidgets.QPushButton):
@@ -170,6 +172,148 @@ class FlameLabel(QtWidgets.QLabel):
                     font: 14px "Discreet"}
                 QLabel:disabled {
                     color: rgb(106, 106, 106)}''')
+
+
+class FlameMessageWindow(QtWidgets.QDialog):
+    '''
+    Custom Qt Flame Message Window v2.1
+
+    message_title: text shown in top left of window ie. Confirm Operation [str]
+    message_type: confirm, message, error, warning [str] confirm and warning return True
+                  or False values
+    message: text displayed in body of window [str]
+    parent: optional - parent window [object]
+
+    Message Window Types:
+
+        confirm: confirm and cancel button / grey left bar - returns True or False
+        message: ok button / blue left bar
+        error: ok button / yellow left bar
+        warning: confirm and cancel button / red left bar - returns True of False
+
+    Usage:
+
+        FlameMessageWindow('Error', 'error', 'some important message')
+
+        or
+
+        if FlameMessageWindow(
+            'Confirm Operation', 'confirm', 'some important message', window):
+                do something
+    '''
+
+    def __init__(self, message_title, message_type, message, parent=None):
+        super(FlameMessageWindow, self).__init__()
+
+        self.message_type = message_type
+
+        self.setWindowFlags(
+            QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint)
+        self.setMinimumSize(QtCore.QSize(500, 330))
+        self.setMaximumSize(QtCore.QSize(500, 330))
+        self.setStyleSheet('background-color: rgb(36, 36, 36)')
+
+        resolution = QtWidgets.QDesktopWidget().screenGeometry()
+        self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
+                  (resolution.height() / 2) - (self.frameSize().height() / 2))
+
+        self.setParent(parent)
+
+        self.grid = QtWidgets.QGridLayout()
+
+        self.main_label = FlameLabel(message_title, 'normal', label_width=500)
+        self.main_label.setStyleSheet('''
+            color: rgb(154, 154, 154);
+            font: 18px "Discreet"''')
+
+        self.message_text_edit = QtWidgets.QTextEdit(message)
+        self.message_text_edit.setDisabled(True)
+        self.message_text_edit.setStyleSheet('''
+            QTextEdit {
+                color: rgb(154, 154, 154);
+                background-color: rgb(36, 36, 36);
+                selection-color: rgb(190, 190, 190);
+                selection-background-color: rgb(36, 36, 36);
+                border: none;
+                padding-left: 20px;
+                padding-right: 20px;
+                font: 12px "Discreet"}''')
+
+        if message_type in ('confirm', 'warning'):
+            self.confirm_button = FlameButton(
+                'Confirm', self.confirm, button_color='blue', button_width=110)
+            self.cancel_button = FlameButton('Cancel', self.cancel, button_width=110)
+
+            self.grid.addWidget(self.main_label, 0, 0)
+            self.grid.setRowMinimumHeight(1, 30)
+            self.grid.addWidget(self.message_text_edit, 2, 0, 4, 8)
+            self.grid.setRowMinimumHeight(9, 30)
+            self.grid.addWidget(self.cancel_button, 10, 5)
+            self.grid.addWidget(self.confirm_button, 10, 6)
+            self.grid.setRowMinimumHeight(11, 30)
+        else:
+            self.ok_button = FlameButton(
+                'Ok', self.confirm, button_color='blue', button_width=110)
+
+            self.grid.addWidget(self.main_label, 0, 0)
+            self.grid.setRowMinimumHeight(1, 30)
+            self.grid.addWidget(self.message_text_edit, 2, 0, 4, 8)
+            self.grid.setRowMinimumHeight(9, 30)
+            self.grid.addWidget(self.ok_button, 10, 6)
+            self.grid.setRowMinimumHeight(11, 30)
+
+        # Why stripping these?
+        message = message.replace('<br>', '')
+        message = message.replace('<center>', '')
+        message = message.replace('<dd>', '')
+
+        self.setLayout(self.grid)
+        self.show()
+        self.exec_()
+
+    def __bool__(self):
+
+        return self.confirmed
+
+    def cancel(self):
+
+        self.close()
+        self.confirmed = False
+
+    def confirm(self):
+
+        self.close()
+        self.confirmed = True
+
+    def paintEvent(self, event):
+        painter = QtGui.QPainter(self)
+
+        if self.message_type == 'confirm':
+            line_color = QtGui.QColor(71, 71, 71)
+        elif self.message_type == 'message':
+            line_color = QtGui.QColor(0, 110, 176)
+        elif self.message_type == 'error':
+            line_color = QtGui.QColor(200, 172, 30)
+        elif self.message_type == 'warning':
+            line_color = QtGui.QColor(200, 29, 29)
+
+        painter.setPen(QtGui.QPen(line_color, 6, QtCore.Qt.SolidLine))
+        painter.drawLine(0, 0, 0, 330)
+
+        painter.setPen(QtGui.QPen(QtGui.QColor(71, 71, 71), .5, QtCore.Qt.SolidLine))
+        painter.drawLine(0, 40, 500, 40)
+
+    def mousePressEvent(self, event):
+        self.oldPosition = event.globalPos()
+
+    def mouseMoveEvent(self, event):
+
+        try:
+            delta = QtCore.QPoint(event.globalPos() - self.oldPosition)
+            self.move(self.x() + delta.x(), self.y() + delta.y())
+            self.oldPosition = event.globalPos()
+        except:
+            pass
 
 
 class FlameLineEdit(QtWidgets.QLineEdit):
@@ -414,6 +558,105 @@ class FlameProgressWindow(QtWidgets.QDialog):
             pass
 
 
+class FlamePushButtonMenu(QtWidgets.QPushButton):
+    '''
+    Custom Qt Flame Menu Push Button Widget v3.1
+
+    button_name: text displayed on button [str]
+    menu_options: list of options show when button is pressed [list]
+    menu_width: (optional) width of widget. default is 150. [int]
+    max_menu_width: (optional) set maximum width of widget. default is 2000. [int]
+    menu_action: (optional) execute when button is changed. [function]
+
+    Usage:
+
+        push_button_menu_options = ['Item 1', 'Item 2', 'Item 3', 'Item 4']
+        menu_push_button = FlamePushButtonMenu(
+            'push_button_name', push_button_menu_options)
+
+        or
+
+        push_button_menu_options = ['Item 1', 'Item 2', 'Item 3', 'Item 4']
+        menu_push_button = FlamePushButtonMenu(
+            push_button_menu_options[0], push_button_menu_options)
+
+    Notes:
+        Started as v2.1
+        v3.1 adds a functionionality to set the width of the menu to be the same as the
+        button.
+    '''
+
+    def __init__(self, button_name, menu_options, menu_width=240, max_menu_width=2000,
+                 menu_action=None):
+        super(FlamePushButtonMenu, self).__init__()
+
+        self.button_name = button_name
+        self.menu_options = menu_options
+        self.menu_action = menu_action
+
+        self.setText(button_name)
+        self.setMinimumHeight(28)
+        self.setMinimumWidth(menu_width)
+        self.setMaximumWidth(max_menu_width)  # is max necessary?
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.setStyleSheet('''
+            QPushButton {
+                color: rgb(154, 154, 154);
+                background-color: rgb(45, 55, 68);
+                border: none;
+                font: 14px "Discreet";
+                padding-left: 9px;
+                text-align: left}
+            QPushButton:disabled {
+                color: rgb(116, 116, 116);
+                background-color: rgb(45, 55, 68);
+                border: none}
+            QPushButton:hover {
+                border: 1px solid rgb(90, 90, 90)}
+            QPushButton::menu-indicator {image: none}
+            QToolTip {
+                color: rgb(170, 170, 170);
+                background-color: rgb(71, 71, 71);
+                border: 10px solid rgb(71, 71, 71)}''')
+
+        # Menu
+        def match_width():
+            '''Match menu width to the parent push button width.'''
+            self.pushbutton_menu.setMinimumWidth(self.size().width())
+
+        self.pushbutton_menu = QtWidgets.QMenu(self)
+        self.pushbutton_menu.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.pushbutton_menu.aboutToShow.connect(match_width)
+        self.pushbutton_menu.setStyleSheet('''
+            QMenu {
+                color: rgb(154, 154, 154);
+                background-color: rgb(45, 55, 68);
+                border: none; font: 14px "Discreet"}
+            QMenu::item:selected {
+                color: rgb(217, 217, 217);
+                background-color: rgb(58, 69, 81)}''')
+
+        self.populate_menu(menu_options)
+        self.setMenu(self.pushbutton_menu)
+
+    def create_menu(self, option, menu_action):
+        ''' '''
+
+        self.setText(option)
+
+        if menu_action:
+            menu_action()
+
+    def populate_menu(self, options):
+        '''Empty the menu then reassemble the options.'''
+
+        self.pushbutton_menu.clear()
+
+        for option in options:
+            self.pushbutton_menu.addAction(
+                option, partial(self.create_menu, option, self.menu_action))
+
+
 class FlameTokenPushButton(QtWidgets.QPushButton):
     '''
     Custom Qt Flame Token Push Button Widget v2.1
@@ -603,15 +846,34 @@ class FindSegmentApplyText(object):
         self.message(TITLE_VERSION)
         self.message('Script called from {}'.format(__file__))
 
+        # Load presets
+        self.presets_xml = os.path.join(os.path.dirname(__file__), XML)
+        self.presets_xml_tree = ''
+        self.presets_xml_root = ''
+        self.load_presets()
+
+        # Find segments
         self.segments = []
         self.find_segments()
 
+        # Tokens
         self.now = dt.datetime.now()
         self.segment_tokens = {}
 
+        # Columns
         self.table_columns = [
                 'Segment #', 'Sequence', 'Segment', 'Record In', 'Record Out',
                 'Filename']
+
+        # Fields
+        self.find = ''
+        self.load_find()
+        self.pattern = ''
+        self.load_pattern()
+
+        # Window
+        self.save_window_x = 500
+        self.save_window_y = 100
 
         self.main_window()
 
@@ -646,6 +908,37 @@ class FindSegmentApplyText(object):
         project = flame.project.current_project.name
         path = os.path.join(root_path, project, 'text', 'flame')
         return path
+
+    def load_find(self):
+        '''Load the first preset's pattern or use the default pattern.'''
+
+        if self.presets_xml_root.findall('preset'):
+            # load pattern for first element in list of presets
+            self.find = self.presets_xml_root.findall(
+                'preset')[0].find('find').text
+        else:
+            self.find = ''
+
+    def load_pattern(self):
+        '''Load the first preset's pattern or use the default pattern.'''
+
+        if self.presets_xml_root.findall('preset'):
+            # load pattern for first element in list of presets
+            self.pattern = self.presets_xml_root.findall(
+                'preset')[0].find('pattern').text
+        else:
+            self.pattern = DEFAULT_PATTERN
+
+    def load_presets(self):
+        '''Load preset file if preset and store XML tree & root'''
+
+        if os.path.isfile(self.presets_xml):
+            self.presets_xml_tree = et.parse(self.presets_xml)
+        else:
+            default = '''<presets></presets>'''
+            self.presets_xml_tree = et.ElementTree(et.fromstring(default))
+
+        self.presets_xml_root = self.presets_xml_tree.getroot()
 
     def find_segments(self):
         '''Assemble list of all PySegments in selected Sequences.'''
@@ -727,8 +1020,215 @@ class FindSegmentApplyText(object):
         else:
             self.message('File does not exist!')
 
+    def save_preset_window(self):
+        '''Smaller window with save dialog.'''
+
+        def duplicate_check():
+            '''Check that preset to be saved would not be a duplicate.'''
+
+            duplicate = False
+            preset_name = self.line_edit_preset_name.text()
+
+            for preset in self.presets_xml_root.findall('preset'):
+                if preset.get('name') == preset_name:
+                    duplicate = True
+
+            return duplicate
+
+        def save_preset():
+            '''Save new preset to XML file.'''
+
+            new_preset = et.Element('preset', name=self.line_edit_preset_name.text())
+            new_filter = et.SubElement(new_preset, 'find')
+            new_filter.text = self.find
+            new_pattern = et.SubElement(new_preset, 'pattern')
+            new_pattern.text = self.pattern
+
+            self.presets_xml_root.append(new_preset)
+            sort_presets()
+
+            try:
+                self.presets_xml_tree.write(self.presets_xml)
+
+                self.message('{} preset saved to {}'.format(
+                    self.line_edit_preset_name.text(), self.presets_xml))
+            except (IOError, OSError):
+                FlameMessageWindow(
+                    'Error', 'error',
+                    'Check permissions on {}'.format(os.path.dirname(__file__)))
+
+        def overwrite_preset():
+            '''Replace pattern in presets XML tree then save to XML file.'''
+
+            preset_name = self.line_edit_preset_name.text()
+
+            for preset in self.presets_xml_root.findall('preset'):
+                if preset.get('name') == preset_name:
+                    preset.find('find').text = self.find
+                    preset.find('pattern').text = self.pattern
+
+            try:
+                self.presets_xml_tree.write(self.presets_xml)
+
+                self.message('{} preset saved to {}'.format(
+                    self.line_edit_preset_name.text(), self.presets_xml))
+            except (IOError, OSError):
+                FlameMessageWindow(
+                    'Error', 'error',
+                    'Check permissions on {}'.format(os.path.dirname(__file__)))
+
+        def sort_presets():
+            '''Alphabetically sort presets by name attribute.'''
+
+            self.presets_xml_root[:] = sorted(
+                self.presets_xml_root,
+                key=lambda child: (child.tag, child.get('name')))
+
+        def save_button():
+            '''Triggered when the Save button at the bottom is pressed.'''
+
+            duplicate = duplicate_check()
+
+            if duplicate:
+                if FlameMessageWindow(
+                        'Overwrite Existing Preset', 'confirm', 'Are you '
+                        + 'sure want to permanently overwrite this preset?' + '<br/>'
+                        + 'This operation cannot be undone.'):
+                    overwrite_preset()
+                    self.btn_preset.populate_menu(
+                        [preset.get('name') for preset in
+                         self.presets_xml_root.findall('preset')])
+                    self.btn_preset.setText(self.line_edit_preset_name.text())
+                    self.save_window.close()
+
+            if not duplicate:
+                save_preset()
+                self.btn_preset.populate_menu(
+                    [preset.get('name') for preset in
+                     self.presets_xml_root.findall('preset')])
+                self.btn_preset.setText(self.line_edit_preset_name.text())
+                self.save_window.close()
+
+        def cancel_button():
+            '''Triggered when the Cancel button at the bottom is pressed.'''
+
+            self.save_window.close()
+
+        self.save_window = QtWidgets.QWidget()
+
+        self.save_window.setMinimumSize(self.save_window_x, self.save_window_y)
+
+        self.save_window.setStyleSheet('background-color: #272727')
+        self.save_window.setWindowTitle('Save Preset As...')
+
+        # Center Window
+        resolution = QtWidgets.QDesktopWidget().screenGeometry()
+
+        self.save_window.move(
+            (resolution.width() / 2) - (self.save_window_x / 2),
+            (resolution.height() / 2) - (self.save_window_y / 2 + 44))
+
+        # Labels
+        self.label_preset_name = FlameLabel('Preset Name', 'normal')
+        self.label_preset_pattern = FlameLabel('Pattern', 'normal')
+
+        # Line Edits
+        self.line_edit_preset_name = FlameLineEdit('')
+
+        # Buttons
+        self.save_btn_save = FlameButton(
+            'Save', save_button, button_color='blue', button_width=110)
+        self.save_btn_cancel = FlameButton('Cancel', cancel_button, button_width=110)
+
+        # Layout
+        self.save_grid = QtWidgets.QGridLayout()
+        self.save_grid.setVerticalSpacing(10)
+        self.save_grid.setHorizontalSpacing(10)
+        self.save_grid.addWidget(self.label_preset_name, 0, 0)
+        self.save_grid.addWidget(self.line_edit_preset_name, 0, 1)
+
+        self.save_hbox = QtWidgets.QHBoxLayout()
+        self.save_hbox.addStretch(1)
+        self.save_hbox.addWidget(self.save_btn_cancel)
+        self.save_hbox.addWidget(self.save_btn_save)
+
+        self.save_vbox = QtWidgets.QVBoxLayout()
+        self.save_vbox.setMargin(20)
+        self.save_vbox.addLayout(self.save_grid)
+        self.save_vbox.addSpacing(20)
+        self.save_vbox.addLayout(self.save_hbox)
+
+        self.save_window.setLayout(self.save_vbox)
+
+        self.save_window.show()
+
+        return self.save_window
+
     def main_window(self):
         '''The main GUI.'''
+
+        def get_selected_preset():
+            '''Get preset that should be displayed or return empty string.'''
+
+            try:
+                selected_preset = self.presets_xml_root.findall('preset')[0].get('name')
+            except IndexError:  # if findall() returns empty list
+                selected_preset = ''
+
+            return selected_preset
+
+        def get_preset_names():
+            '''Return just the names of the presets '''
+
+            try:
+                preset_names = [
+                    preset.get('name') for preset in
+                    self.presets_xml_root.findall('preset')]
+            except IndexError:  # if findall() returns empty list
+                preset_names = []
+
+            return preset_names
+
+        def update_preset():
+            '''Update pattern when preset is changed.'''
+
+            preset_name = self.btn_preset.text()
+
+            if preset_name:  # might be empty str if all presets were deleted
+                for preset in self.presets_xml_root.findall('preset'):
+                    if preset.get('name') == preset_name:
+                        self.find_line_edit.setText(preset.find('find').text)
+                        self.pattern_line_edit.setText(preset.find('pattern').text)
+                        break  # should not be any duplicates
+
+        def preset_delete_button():
+            '''Triggered when the Delete button on the Preset line is pressed.'''
+
+            if FlameMessageWindow(
+                    'Confirm Operation', 'confirm', 'Are you sure want to'
+                    + ' permanently delete this preset?' + '<br/>' + 'This operation'
+                    + ' cannot be undone.'):
+                preset_name = self.btn_preset.text()
+
+                for preset in self.presets_xml_root.findall('preset'):
+                    if preset.get('name') == preset_name:
+                        self.presets_xml_root.remove(preset)
+                        self.message(
+                            '{} preset deleted from {}'.format(
+                                preset_name, self.presets_xml))
+
+                self.presets_xml_tree.write(self.presets_xml)
+
+            # Reload presets button
+            self.load_presets()
+            self.btn_preset.populate_menu(get_preset_names())
+            self.btn_preset.setText(get_selected_preset())
+            update_preset()
+
+        def preset_save_button():
+            '''Triggered when the Save button the Presets line is pressed.'''
+
+            self.save_preset_window()
 
         def okay_button():
             '''Close window and process the artist's selected selection.'''
@@ -773,8 +1273,7 @@ class FindSegmentApplyText(object):
             '''Updates the table when anything is typed in the Find bar.'''
 
             for num in range(self.segments_table.rowCount()):
-                if (self.find.text() in
-                        self.segments_table.get_data_by_row_number(num)[2]):
+                if self.find in self.segments_table.get_data_by_row_number(num)[2]:
                     self.segments_table.showRow(num)
                 else:
                     self.segments_table.hideRow(num)
@@ -785,7 +1284,7 @@ class FindSegmentApplyText(object):
             for count, segment in enumerate(self.segments):
                 self.generate_segment_tokens(segment)
                 self.segments_table.add_item(
-                        count, 5, self.resolve_tokens(self.pattern.text()))
+                        count, 5, self.resolve_tokens(self.pattern))
 
         def verify_filename_column_exists():
             '''Check if filename for text setup exists, if not, color cell text red.'''
@@ -796,9 +1295,16 @@ class FindSegmentApplyText(object):
                     self.segments_table.item(row, 5).setData(
                             QtCore.Qt.ForegroundRole, QtGui.QColor(190, 34, 34))
 
+        def find_changed():
+            '''Everything to refresh when the find line edit is changed.'''
+
+            self.find = self.find_line_edit.text()
+            filter_table()
+
         def pattern_changed():
             '''Everything to refresh when the pattern line edit is changed.'''
 
+            self.pattern = self.pattern_line_edit.text()
             update_filename_column()
             self.segments_table.resizeColumnsToContents()
             verify_filename_column_exists()
@@ -819,7 +1325,7 @@ class FindSegmentApplyText(object):
                 self.segments_table.add_item(
                         count, 4, segment.record_out.timecode)
                 self.segments_table.add_item(
-                        count, 5, self.resolve_tokens(self.pattern.text()))
+                        count, 5, self.resolve_tokens(self.pattern))
 
             verify_filename_column_exists()
             self.segments_table.resizeColumnsToContents()
@@ -844,29 +1350,39 @@ class FindSegmentApplyText(object):
                 (resolution.height() / 2) - (self.window.frameSize().height() / 2))
 
         # Label
+        self.preset_label = FlameLabel('Preset')
         self.find_label = FlameLabel('Find Segment')
         self.pattern_label = FlameLabel('Filename Pattern')
 
         # Line Edit
-        self.find = FlameLineEdit('')
-        self.find.textChanged.connect(filter_table)
+        self.find_line_edit = FlameLineEdit(self.find)
+        self.find_line_edit.textChanged.connect(find_changed)
 
-        self.pattern = FlameLineEdit(DEFAULT_PATTERN)
-        self.pattern.textChanged.connect(pattern_changed)
+        self.pattern_line_edit = FlameLineEdit(self.pattern)
+        self.pattern_line_edit.textChanged.connect(pattern_changed)
 
         # Table
         self.segments_table = FlameTableWidget(self.table_columns)
         self.segments_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         populate_table()
+        filter_table()
 
         # Buttons
+        self.btn_preset = FlamePushButtonMenu(
+            get_selected_preset(), get_preset_names(), menu_action=update_preset)
+        self.btn_preset.setMaximumSize(QtCore.QSize(4000, 28))  # span over to Save btn
+
+        self.btn_preset_save = FlameButton('Save', preset_save_button, button_width=110)
+        self.btn_preset_delete = FlameButton(
+            'Delete', preset_delete_button, button_width=110)
+
         self.tokens_btn = FlameTokenPushButton(
             'Add Token',
             # self.segment_tokens is a dict with a nested set for each key
             # FlameTokenPushButton wants a dict that is only {token_name: token}
             # so need to simplify it with a dict comprehension
             {key: values[0] for key, values in self.segment_tokens.items()},
-            self.pattern)
+            self.pattern_line_edit)
         self.ok_btn = FlameButton('Ok', okay_button, button_color='blue')
         self.ok_btn.setAutoDefault(True)  # doesnt make Enter key work
 
@@ -877,11 +1393,15 @@ class FindSegmentApplyText(object):
         self.grid.setHorizontalSpacing(10)
         self.grid.setVerticalSpacing(10)
 
-        self.grid.addWidget(self.find_label, 0, 0)
-        self.grid.addWidget(self.find, 0, 1)
-        self.grid.addWidget(self.pattern_label, 1, 0)
-        self.grid.addWidget(self.pattern, 1, 1)
-        self.grid.addWidget(self.tokens_btn, 1, 2)
+        self.grid.addWidget(self.preset_label, 0, 0)
+        self.grid.addWidget(self.btn_preset, 0, 1)
+        self.grid.addWidget(self.btn_preset_save, 0, 2)
+        self.grid.addWidget(self.btn_preset_delete, 0, 3)
+        self.grid.addWidget(self.find_label, 1, 0)
+        self.grid.addWidget(self.find_line_edit, 1, 1)
+        self.grid.addWidget(self.pattern_label, 2, 0)
+        self.grid.addWidget(self.pattern_line_edit, 2, 1)
+        self.grid.addWidget(self.tokens_btn, 2, 2)
 
         self.hbox = QtWidgets.QHBoxLayout()
         self.hbox.addWidget(self.segments_table)
