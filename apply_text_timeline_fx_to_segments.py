@@ -2,13 +2,13 @@
 Script Name: Apply Text TimelineFX to Segments
 Written By: Kieran Hanrahan
 
-Script Version: 1.3.3
+Script Version: 1.4.3
 Flame Version: 2021.1
 
 URL: http://github.com/khanrahan/apply-text-timelinefx-to-segments
 
 Creation Date: 06.23.23
-Update Date: 10.21.23
+Update Date: 10.23.23
 
 Description:
 
@@ -45,13 +45,13 @@ from PySide2 import QtGui
 from PySide2 import QtWidgets
 
 TITLE = 'Apply Text TimelineFX to Segments'
-VERSION_INFO = (1, 3, 3)
+VERSION_INFO = (1, 4, 3)
 VERSION = '.'.join([str(num) for num in VERSION_INFO])
 TITLE_VERSION = '{} v{}'.format(TITLE, VERSION)
 MESSAGE_PREFIX = '[PYTHON HOOK]'
 
-SETUPS = '/opt/Autodesk/project'
-DEFAULT_PATTERN = '/opt/Autodesk/project/<project>/text/flame/<name>.ttg'
+DEFAULT_PATH = '/opt/Autodesk/project'
+DEFAULT_PATTERN = '<project>/text/flame/<name>.ttg'
 XML = 'apply_text_timeline_fx_to_segments.xml'
 
 
@@ -172,6 +172,142 @@ class FlameLabel(QtWidgets.QLabel):
                     font: 14px "Discreet"}
                 QLabel:disabled {
                     color: rgb(106, 106, 106)}''')
+
+
+class FlameLineEdit(QtWidgets.QLineEdit):
+    '''
+    Custom Qt Flame Line Edit Widget v2.1
+
+    Main window should include this: window.setFocusPolicy(QtCore.Qt.StrongFocus)
+
+    text: text show [str]
+    width: (optional) width of widget. default is 150. [int]
+    max_width: (optional) maximum width of widget. default is 2000. [int]
+
+    Usage:
+
+        line_edit = FlameLineEdit('Some text here')
+    '''
+
+    def __init__(self, text, width=150, max_width=2000):
+        super(FlameLineEdit, self).__init__()
+
+        self.setText(text)
+        self.setMinimumHeight(28)
+        self.setMinimumWidth(width)
+        self.setMaximumWidth(max_width)
+        self.setFocusPolicy(QtCore.Qt.ClickFocus)
+        self.setStyleSheet('''
+            QLineEdit {
+                color: rgb(154, 154, 154);
+                background-color: rgb(55, 65, 75);
+                selection-color: rgb(38, 38, 38);
+                selection-background-color: rgb(184, 177, 167);
+                border: 1px solid rgb(55, 65, 75);
+                padding-left: 5px;
+                font: 14px "Discreet"}
+            QLineEdit:focus {background-color: rgb(73, 86, 99)}
+            QLineEdit:hover {border: 1px solid rgb(90, 90, 90)}
+            QLineEdit:disabled {
+                color: rgb(106, 106, 106);
+                background-color: rgb(55, 55, 55);
+                border: 1px solid rgb(55, 55, 55)}
+            QToolTip {
+                color: rgb(170, 170, 170);
+                background-color: rgb(71, 71, 71);
+                border: none}''')
+
+
+class FlameLineEditFileBrowse(QtWidgets.QLineEdit):
+    '''
+    Custom Qt Flame Clickable Line Edit Widget with File Browser
+
+    FlameLineEditFileBrowse(file_path, filter_type, window)
+
+    file_path:
+        Path browser will open to. If set to root folder (/), browser will open to user
+        home directory
+    filter_type:
+        Type of file browser will filter_type for. If set to 'dir', browser will select
+        directory.  For example, 'Python (*.py)' or 'dir'
+
+    '''
+
+    clicked = QtCore.Signal()
+
+    def __init__(self, file_path, filter_type, parent, *args, **kwargs):
+        super(FlameLineEditFileBrowse, self).__init__(*args, **kwargs)
+
+        self.filter_type = filter_type
+        self.file_path = file_path
+        self.path_new = ''
+
+        self.setText(file_path)
+        self.setParent(parent)
+        self.setMinimumHeight(28)
+        self.setReadOnly(True)
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.clicked.connect(self.file_browse)
+        self.setStyleSheet('''
+            QLineEdit {
+                color: #898989;
+                background-color: #373e47;
+                font: 14px "Discreet"}
+            QLineEdit:disabled {
+                color: #6a6a6a;
+                background-color: #373737}''')
+
+    def mousePressEvent(self, event):
+        if event.button() == QtCore.Qt.LeftButton:
+            self.setStyleSheet('''
+                QLineEdit {
+                    color: #bbbbbb;
+                    background-color: #474e58;
+                    font: 14px "Discreet"}
+                QLineEdit:disabled {
+                    color: #6a6a6a;
+                    background-color: #373737}''')
+            self.clicked.emit()
+            self.setStyleSheet('''
+                QLineEdit {
+                    color: #898989;
+                    background-color: #373e47;
+                    font: 14px "Discreet"}
+                QLineEdit:disabled {
+                    color: #6a6a6a;
+                    background-color: #373737}''')
+        else:
+            super().mousePressEvent(event)
+
+    def file_browse(self):
+        # from PySide2 import QtWidgets
+
+        file_browser = QtWidgets.QFileDialog()
+
+        # If no path go to user home directory
+
+        if self.file_path == '/':
+            self.file_path = os.path.expanduser('~')
+        if os.path.isfile(self.file_path):
+            self.file_path = self.file_path.rsplit('/', 1)[0]
+
+        file_browser.setDirectory(self.file_path)
+
+        # If filter_type set to dir, open Directory Browser, if anything else, open File
+        # Browser
+
+        if self.filter_type == 'dir':
+            file_browser.setFileMode(QtWidgets.QFileDialog.Directory)
+            if file_browser.exec_():
+                self.path_new = file_browser.selectedFiles()[0]
+                self.setText(self.path_new)
+        else:
+            # Change to ExistingFiles to capture many files
+            file_browser.setFileMode(QtWidgets.QFileDialog.ExistingFile)
+            file_browser.setNameFilter(self.filter_type)
+            if file_browser.exec_():
+                self.path_new = file_browser.selectedFiles()[0]
+                self.setText(self.path_new)
 
 
 class FlameMessageWindow(QtWidgets.QDialog):
@@ -314,50 +450,6 @@ class FlameMessageWindow(QtWidgets.QDialog):
             self.oldPosition = event.globalPos()
         except:
             pass
-
-
-class FlameLineEdit(QtWidgets.QLineEdit):
-    '''
-    Custom Qt Flame Line Edit Widget v2.1
-
-    Main window should include this: window.setFocusPolicy(QtCore.Qt.StrongFocus)
-
-    text: text show [str]
-    width: (optional) width of widget. default is 150. [int]
-    max_width: (optional) maximum width of widget. default is 2000. [int]
-
-    Usage:
-
-        line_edit = FlameLineEdit('Some text here')
-    '''
-
-    def __init__(self, text, width=150, max_width=2000):
-        super(FlameLineEdit, self).__init__()
-
-        self.setText(text)
-        self.setMinimumHeight(28)
-        self.setMinimumWidth(width)
-        self.setMaximumWidth(max_width)
-        self.setFocusPolicy(QtCore.Qt.ClickFocus)
-        self.setStyleSheet('''
-            QLineEdit {
-                color: rgb(154, 154, 154);
-                background-color: rgb(55, 65, 75);
-                selection-color: rgb(38, 38, 38);
-                selection-background-color: rgb(184, 177, 167);
-                border: 1px solid rgb(55, 65, 75);
-                padding-left: 5px;
-                font: 14px "Discreet"}
-            QLineEdit:focus {background-color: rgb(73, 86, 99)}
-            QLineEdit:hover {border: 1px solid rgb(90, 90, 90)}
-            QLineEdit:disabled {
-                color: rgb(106, 106, 106);
-                background-color: rgb(55, 55, 55);
-                border: 1px solid rgb(55, 55, 55)}
-            QToolTip {
-                color: rgb(170, 170, 170);
-                background-color: rgb(71, 71, 71);
-                border: none}''')
 
 
 class FlameProgressWindow(QtWidgets.QDialog):
@@ -852,6 +944,16 @@ class FindSegmentApplyText(object):
         self.presets_xml_root = ''
         self.load_presets()
 
+        # Fields
+        self.find = ''
+        self.load_find()
+
+        self.path = ''
+        self.load_path()
+
+        self.pattern = ''
+        self.load_pattern()
+
         # Find segments
         self.segments = []
         self.find_segments()
@@ -864,12 +966,6 @@ class FindSegmentApplyText(object):
         self.table_columns = [
                 'Segment #', 'Sequence', 'Segment', 'Record In', 'Record Out',
                 'Filename']
-
-        # Fields
-        self.find = ''
-        self.load_find()
-        self.pattern = ''
-        self.load_pattern()
 
         # Window
         self.save_window_x = 500
@@ -901,31 +997,39 @@ class FindSegmentApplyText(object):
         parent_sequence = parents[-1]
         return parent_sequence
 
-    @staticmethod
-    def get_setups_path(root_path):
-        '''Standard path for project text setups.'''
+    def load_preset_by_index_element(self, index, element):
+        '''ElementTree saves empty string as None.  Convert None back to empty
+        string.'''
 
-        project = flame.project.current_project.name
-        path = os.path.join(root_path, project, 'text', 'flame')
-        return path
+        preset_element = (
+            self.presets_xml_root.findall('preset')[index].find(element).text)
+
+        if preset_element is None:
+            preset_element = ''
+
+        return preset_element
 
     def load_find(self):
-        '''Load the first preset's pattern or use the default pattern.'''
+        '''Load the first preset's search term or use the default pattern.'''
 
         if self.presets_xml_root.findall('preset'):
-            # load pattern for first element in list of presets
-            self.find = self.presets_xml_root.findall(
-                'preset')[0].find('find').text
+            self.find = self.load_preset_by_index_element(0, 'find')
         else:
             self.find = ''
+
+    def load_path(self):
+        '''Load the first preset's path or use the default pattern.'''
+
+        if self.presets_xml_root.findall('preset'):
+            self.path = self.load_preset_by_index_element(0, 'path')
+        else:
+            self.path = DEFAULT_PATH
 
     def load_pattern(self):
         '''Load the first preset's pattern or use the default pattern.'''
 
         if self.presets_xml_root.findall('preset'):
-            # load pattern for first element in list of presets
-            self.pattern = self.presets_xml_root.findall(
-                'preset')[0].find('pattern').text
+            self.pattern = self.load_preset_by_index_element(0, 'pattern')
         else:
             self.pattern = DEFAULT_PATTERN
 
@@ -987,16 +1091,21 @@ class FindSegmentApplyText(object):
         self.segment_tokens['Year'] = [
                 '<YYYY>', self.now.strftime('%Y')]
 
-    def resolve_tokens(self, pattern):
+    def resolve_tokens(self):
         '''Replace tokens with values.'''
 
-        result = pattern
+        result = self.pattern
 
         for token, values in self.segment_tokens.items():
             del token
             result = re.sub(values[0], values[1], result)
 
         return result
+
+    def assemble_filename(self):
+        '''Assemble finished filename for row in the Table.'''
+
+        return os.path.join(self.path, self.resolve_tokens())
 
     def apply_text_fx_to_segment(self, segment, text_setup):
         '''Apply Text TimelineFX to segment, then load setup.'''
@@ -1041,6 +1150,8 @@ class FindSegmentApplyText(object):
             new_preset = et.Element('preset', name=self.line_edit_preset_name.text())
             new_filter = et.SubElement(new_preset, 'find')
             new_filter.text = self.find
+            new_path = et.SubElement(new_preset, 'path')
+            new_path.text = self.path
             new_pattern = et.SubElement(new_preset, 'pattern')
             new_pattern.text = self.pattern
 
@@ -1065,6 +1176,7 @@ class FindSegmentApplyText(object):
             for preset in self.presets_xml_root.findall('preset'):
                 if preset.get('name') == preset_name:
                     preset.find('find').text = self.find
+                    preset.find('path').text = self.path
                     preset.find('pattern').text = self.pattern
 
             try:
@@ -1190,7 +1302,7 @@ class FindSegmentApplyText(object):
             return preset_names
 
         def update_preset():
-            '''Update pattern when preset is changed.'''
+            '''Update fields when preset is changed.'''
 
             preset_name = self.btn_preset.text()
 
@@ -1198,6 +1310,7 @@ class FindSegmentApplyText(object):
                 for preset in self.presets_xml_root.findall('preset'):
                     if preset.get('name') == preset_name:
                         self.find_line_edit.setText(preset.find('find').text)
+                        self.path_line_edit.setText(preset.find('path').text)
                         self.pattern_line_edit.setText(preset.find('pattern').text)
                         break  # should not be any duplicates
 
@@ -1283,8 +1396,7 @@ class FindSegmentApplyText(object):
 
             for count, segment in enumerate(self.segments):
                 self.generate_segment_tokens(segment)
-                self.segments_table.add_item(
-                        count, 5, self.resolve_tokens(self.pattern))
+                self.segments_table.add_item(count, 5, self.assemble_filename())
 
         def verify_filename_column_exists():
             '''Check if filename for text setup exists, if not, color cell text red.'''
@@ -1300,6 +1412,14 @@ class FindSegmentApplyText(object):
 
             self.find = self.find_line_edit.text()
             filter_table()
+
+        def path_changed():
+            '''Everything to refresh when the path line edit is changed.'''
+
+            self.path = self.path_line_edit.text()
+            update_filename_column()
+            self.segments_table.resizeColumnsToContents()
+            verify_filename_column_exists()
 
         def pattern_changed():
             '''Everything to refresh when the pattern line edit is changed.'''
@@ -1325,7 +1445,7 @@ class FindSegmentApplyText(object):
                 self.segments_table.add_item(
                         count, 4, segment.record_out.timecode)
                 self.segments_table.add_item(
-                        count, 5, self.resolve_tokens(self.pattern))
+                        count, 5, self.assemble_filename())
 
             verify_filename_column_exists()
             self.segments_table.resizeColumnsToContents()
@@ -1352,11 +1472,15 @@ class FindSegmentApplyText(object):
         # Label
         self.preset_label = FlameLabel('Preset')
         self.find_label = FlameLabel('Find Segment')
-        self.pattern_label = FlameLabel('Filename Pattern')
+        self.path_label = FlameLabel('Path')
+        self.pattern_label = FlameLabel('Pattern')
 
         # Line Edit
         self.find_line_edit = FlameLineEdit(self.find)
         self.find_line_edit.textChanged.connect(find_changed)
+
+        self.path_line_edit = FlameLineEditFileBrowse(self.path, 'dir', self.window)
+        self.path_line_edit.textChanged.connect(path_changed)
 
         self.pattern_line_edit = FlameLineEdit(self.pattern)
         self.pattern_line_edit.textChanged.connect(pattern_changed)
@@ -1399,9 +1523,11 @@ class FindSegmentApplyText(object):
         self.grid.addWidget(self.btn_preset_delete, 0, 3)
         self.grid.addWidget(self.find_label, 1, 0)
         self.grid.addWidget(self.find_line_edit, 1, 1)
-        self.grid.addWidget(self.pattern_label, 2, 0)
-        self.grid.addWidget(self.pattern_line_edit, 2, 1)
-        self.grid.addWidget(self.tokens_btn, 2, 2)
+        self.grid.addWidget(self.path_label, 2, 0)
+        self.grid.addWidget(self.path_line_edit, 2, 1)
+        self.grid.addWidget(self.pattern_label, 3, 0)
+        self.grid.addWidget(self.pattern_line_edit, 3, 1)
+        self.grid.addWidget(self.tokens_btn, 3, 2)
 
         self.hbox = QtWidgets.QHBoxLayout()
         self.hbox.addWidget(self.segments_table)
@@ -1426,6 +1552,7 @@ class FindSegmentApplyText(object):
 
 
 def scope_timeline(selection):
+    '''Filter for only PyClips.'''
 
     for item in selection:
         if isinstance(item, flame.PyClip):
@@ -1434,6 +1561,7 @@ def scope_timeline(selection):
 
 
 def get_media_panel_custom_ui_actions():
+    '''Python hook to add custom right click menu.'''
 
     return [{'name': 'Apply...',
              'actions': [{'name': 'Text TimelineFX to Segments',
