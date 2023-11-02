@@ -2,13 +2,13 @@
 Script Name: Apply Text TimelineFX to Segments
 Written By: Kieran Hanrahan
 
-Script Version: 1.4.3
+Script Version: 1.5.3
 Flame Version: 2021.1
 
 URL: http://github.com/khanrahan/apply-text-timelinefx-to-segments
 
 Creation Date: 06.23.23
-Update Date: 10.23.23
+Update Date: 11.01.23
 
 Description:
 
@@ -45,7 +45,7 @@ from PySide2 import QtGui
 from PySide2 import QtWidgets
 
 TITLE = 'Apply Text TimelineFX to Segments'
-VERSION_INFO = (1, 4, 3)
+VERSION_INFO = (1, 5, 3)
 VERSION = '.'.join([str(num) for num in VERSION_INFO])
 TITLE_VERSION = '{} v{}'.format(TITLE, VERSION)
 MESSAGE_PREFIX = '[PYTHON HOOK]'
@@ -650,6 +650,78 @@ class FlameProgressWindow(QtWidgets.QDialog):
             pass
 
 
+class FlamePushButton(QtWidgets.QPushButton):
+    '''
+    Custom Qt Flame Push Button Widget
+
+    This is the original Push Button Widget with just the StyleSheet from the most
+    recent iteration on pyflame.com.
+    '''
+
+    def __init__(self, name, parent, checked, connect, *args, **kwargs):
+        super(FlamePushButton, self).__init__(*args, **kwargs)
+
+        self.setText(name)
+        self.setParent(parent)
+        self.setCheckable(True)
+        self.setChecked(checked)
+        self.clicked.connect(connect)
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.setMinimumSize(150, 28)
+        self.setMaximumSize(150, 28)
+        self.setStyleSheet('''
+            QPushButton {
+                color: rgb(154, 154, 154);
+                background-color: qlineargradient(
+                    x1: 0, y1: 0, x2: 1, y2: 0,
+                    stop: .93 rgb(58, 58, 58),
+                    stop: .94 rgb(44, 54, 68));
+                text-align: left;
+                border-top: qlineargradient(
+                    x1: 0, y1: 0, x2: 1, y2: 0,
+                    stop: .93 rgb(58, 58, 58),
+                    stop: .94 rgb(44, 54, 68));
+                border-bottom: qlineargradient(
+                    x1: 0, y1: 0, x2: 1, y2: 0,
+                    stop: .93 rgb(58, 58, 58),
+                    stop: .94 rgb(44, 54, 68));
+                border-left: 1px solid rgb(58, 58, 58);
+                border-right: 1px solid rgb(44, 54, 68);
+                padding-left: 5px; font: 14px "Discreet"}
+            QPushButton:checked {
+                color: rgb(217, 217, 217);
+                background-color: qlineargradient(
+                    x1: 0, y1: 0, x2: 1, y2: 0,
+                    stop: .93 rgb(71, 71, 71),
+                    stop: .94 rgb(50, 101, 173));
+                text-align: left;
+                border-top: qlineargradient(
+                    x1: 0, y1: 0, x2: 1, y2: 0,
+                    stop: .93 rgb(71, 71, 71),
+                    stop: .94 rgb(50, 101, 173));
+                border-bottom: qlineargradient(
+                    x1: 0, y1: 0, x2: 1, y2: 0,
+                    stop: .93 rgb(71, 71, 71),
+                    stop: .94 rgb(50, 101, 173));
+                border-left: 1px solid rgb(71, 71, 71);
+                border-right: 1px solid rgb(50, 101, 173);
+                padding-left: 5px;
+                font: italic}
+            QPushButton:hover {border: 1px solid rgb(90, 90, 90)}'
+            QPushButton:disabled {
+                color: #6a6a6a;
+                background-color: qlineargradient(
+                    x1: 0, y1: 0, x2: 1, y2: 0,
+                    stop: .93 rgb(58, 58, 58),
+                    stop: .94 rgb(50, 50, 50));
+                font: light;
+                border: none}
+            QToolTip {
+                color: rgb(170, 170, 170);
+                background-color: rgb(71, 71, 71);
+                border: 10px solid rgb(71, 71, 71)}''')
+
+
 class FlamePushButtonMenu(QtWidgets.QPushButton):
     '''
     Custom Qt Flame Menu Push Button Widget v3.1
@@ -732,7 +804,7 @@ class FlamePushButtonMenu(QtWidgets.QPushButton):
         self.setMenu(self.pushbutton_menu)
 
     def create_menu(self, option, menu_action):
-        ''' '''
+        '''Create menu.'''
 
         self.setText(option)
 
@@ -914,13 +986,14 @@ class FlameTableWidget(QtWidgets.QTableWidget):
 
         data = []
 
-        for row in self.selectionModel().selectedRows():
+        for row in self.selectionModel().selectedRows():  # row is QModelIndex object
             row_data = []
 
-            for column in range(self.columnCount()):
-                row_data.append(
-                        self.model().data(self.model().index(row.row(), column)))
-            data.append(row_data)
+            if not self.isRowHidden(row.row()):
+                for column in range(self.columnCount()):
+                    row_data.append(
+                            self.model().data(self.model().index(row.row(), column)))
+                data.append(row_data)
 
         return data
 
@@ -945,14 +1018,14 @@ class FindSegmentApplyText(object):
         self.load_presets()
 
         # Fields
-        self.find = ''
-        self.load_find()
-
         self.path = ''
         self.load_path()
 
         self.pattern = ''
         self.load_pattern()
+
+        self.find = ''
+        self.load_find()
 
         # Find segments
         self.segments = []
@@ -1009,14 +1082,6 @@ class FindSegmentApplyText(object):
 
         return preset_element
 
-    def load_find(self):
-        '''Load the first preset's search term or use the default pattern.'''
-
-        if self.presets_xml_root.findall('preset'):
-            self.find = self.load_preset_by_index_element(0, 'find')
-        else:
-            self.find = ''
-
     def load_path(self):
         '''Load the first preset's path or use the default pattern.'''
 
@@ -1032,6 +1097,14 @@ class FindSegmentApplyText(object):
             self.pattern = self.load_preset_by_index_element(0, 'pattern')
         else:
             self.pattern = DEFAULT_PATTERN
+
+    def load_find(self):
+        '''Load the first preset's search term or use the default pattern.'''
+
+        if self.presets_xml_root.findall('preset'):
+            self.find = self.load_preset_by_index_element(0, 'find')
+        else:
+            self.find = ''
 
     def load_presets(self):
         '''Load preset file if preset and store XML tree & root'''
@@ -1148,12 +1221,12 @@ class FindSegmentApplyText(object):
             '''Save new preset to XML file.'''
 
             new_preset = et.Element('preset', name=self.line_edit_preset_name.text())
-            new_filter = et.SubElement(new_preset, 'find')
-            new_filter.text = self.find
             new_path = et.SubElement(new_preset, 'path')
             new_path.text = self.path
             new_pattern = et.SubElement(new_preset, 'pattern')
             new_pattern.text = self.pattern
+            new_filter = et.SubElement(new_preset, 'find')
+            new_filter.text = self.find
 
             self.presets_xml_root.append(new_preset)
             sort_presets()
@@ -1175,9 +1248,9 @@ class FindSegmentApplyText(object):
 
             for preset in self.presets_xml_root.findall('preset'):
                 if preset.get('name') == preset_name:
-                    preset.find('find').text = self.find
                     preset.find('path').text = self.path
                     preset.find('pattern').text = self.pattern
+                    preset.find('find').text = self.find
 
             try:
                 self.presets_xml_tree.write(self.presets_xml)
@@ -1309,9 +1382,10 @@ class FindSegmentApplyText(object):
             if preset_name:  # might be empty str if all presets were deleted
                 for preset in self.presets_xml_root.findall('preset'):
                     if preset.get('name') == preset_name:
-                        self.find_line_edit.setText(preset.find('find').text)
                         self.path_line_edit.setText(preset.find('path').text)
                         self.pattern_line_edit.setText(preset.find('pattern').text)
+                        self.find_line_edit.setText(preset.find('find').text)
+                        find_toggle()
                         break  # should not be any duplicates
 
         def preset_delete_button():
@@ -1429,6 +1503,27 @@ class FindSegmentApplyText(object):
             self.segments_table.resizeColumnsToContents()
             verify_filename_column_exists()
 
+        def find_toggle():
+            ''' '''
+
+            if self.find:
+                self.btn_find_segment.setChecked(True)
+                self.find_line_edit.setEnabled(True)
+            if not self.find:
+                self.btn_find_segment.setChecked(False)
+                self.find_line_edit.setEnabled(False)
+
+        def find_segment_button():
+            ''' '''
+
+            if not self.find_line_edit.isEnabled():
+                self.find = self.find_line_edit.text()
+                self.find_line_edit.setEnabled(True)
+            else:
+                self.find = ''
+                self.find_line_edit.setEnabled(False)
+            filter_table()
+
         def populate_table():
             '''Fill in the table.'''
 
@@ -1471,19 +1566,18 @@ class FindSegmentApplyText(object):
 
         # Label
         self.preset_label = FlameLabel('Preset')
-        self.find_label = FlameLabel('Find Segment')
         self.path_label = FlameLabel('Path')
         self.pattern_label = FlameLabel('Pattern')
 
         # Line Edit
-        self.find_line_edit = FlameLineEdit(self.find)
-        self.find_line_edit.textChanged.connect(find_changed)
-
         self.path_line_edit = FlameLineEditFileBrowse(self.path, 'dir', self.window)
         self.path_line_edit.textChanged.connect(path_changed)
 
         self.pattern_line_edit = FlameLineEdit(self.pattern)
         self.pattern_line_edit.textChanged.connect(pattern_changed)
+
+        self.find_line_edit = FlameLineEdit(self.find)
+        self.find_line_edit.textChanged.connect(find_changed)
 
         # Table
         self.segments_table = FlameTableWidget(self.table_columns)
@@ -1507,10 +1601,16 @@ class FindSegmentApplyText(object):
             # so need to simplify it with a dict comprehension
             {key: values[0] for key, values in self.segment_tokens.items()},
             self.pattern_line_edit)
+
+        self.btn_find_segment = FlamePushButton(
+            'Find Segment', self.window, bool(self.find), find_segment_button)
+
         self.ok_btn = FlameButton('Ok', okay_button, button_color='blue')
         self.ok_btn.setAutoDefault(True)  # doesnt make Enter key work
-
         self.cancel_btn = FlameButton('Close', close_button)
+
+        # Finally before Layout
+        find_toggle()
 
         # Layout
         self.grid = QtWidgets.QGridLayout()
@@ -1521,13 +1621,13 @@ class FindSegmentApplyText(object):
         self.grid.addWidget(self.btn_preset, 0, 1)
         self.grid.addWidget(self.btn_preset_save, 0, 2)
         self.grid.addWidget(self.btn_preset_delete, 0, 3)
-        self.grid.addWidget(self.find_label, 1, 0)
-        self.grid.addWidget(self.find_line_edit, 1, 1)
-        self.grid.addWidget(self.path_label, 2, 0)
-        self.grid.addWidget(self.path_line_edit, 2, 1)
-        self.grid.addWidget(self.pattern_label, 3, 0)
-        self.grid.addWidget(self.pattern_line_edit, 3, 1)
-        self.grid.addWidget(self.tokens_btn, 3, 2)
+        self.grid.addWidget(self.path_label, 1, 0)
+        self.grid.addWidget(self.path_line_edit, 1, 1)
+        self.grid.addWidget(self.pattern_label, 2, 0)
+        self.grid.addWidget(self.pattern_line_edit, 2, 1)
+        self.grid.addWidget(self.tokens_btn, 2, 2)
+        self.grid.addWidget(self.btn_find_segment, 3, 0)
+        self.grid.addWidget(self.find_line_edit, 3, 1)
 
         self.hbox = QtWidgets.QHBoxLayout()
         self.hbox.addWidget(self.segments_table)
