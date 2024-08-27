@@ -46,7 +46,7 @@ TITLE = 'Apply Text TimelineFX to Segments'
 VERSION_INFO = (1, 5, 3, 'dev')
 VERSION = '.'.join([str(num) for num in VERSION_INFO])
 TITLE_VERSION = f'{TITLE} v{VERSION}'
-MESSAGE_PREFIX = '[PYTHON HOOK]'
+MESSAGE_PREFIX = '[PYTHON]'
 
 DEFAULT_PATH = '/opt/Autodesk/project'
 DEFAULT_PATTERN = '<project>/text/flame/<name>.ttg'
