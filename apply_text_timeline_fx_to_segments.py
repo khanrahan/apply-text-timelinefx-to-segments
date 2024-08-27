@@ -45,7 +45,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 TITLE = 'Apply Text TimelineFX to Segments'
 VERSION_INFO = (1, 5, 3, 'dev')
 VERSION = '.'.join([str(num) for num in VERSION_INFO])
-TITLE_VERSION = '{} v{}'.format(TITLE, VERSION)
+TITLE_VERSION = f'{TITLE} v{VERSION}'
 MESSAGE_PREFIX = '[PYTHON HOOK]'
 
 DEFAULT_PATH = '/opt/Autodesk/project'
@@ -981,7 +981,7 @@ class FindSegmentApplyText(object):
         self.selection = selection
 
         self.message(TITLE_VERSION)
-        self.message('Script called from {}'.format(__file__))
+        self.message(f'Script called from {__file__}')
 
         # Load presets
         self.presets_xml = os.path.join(os.path.dirname(__file__), XML)
@@ -1097,7 +1097,7 @@ class FindSegmentApplyText(object):
                             continue
                         self.segments.append(segment)
 
-        self.message('Found {} segments'.format(len(self.segments)))
+        self.message(f'Found {len(self.segments)} segments')
 
     def generate_segment_tokens(self, segment):
         """Populate the token list."""
@@ -1148,7 +1148,7 @@ class FindSegmentApplyText(object):
 
         segment_text_fx = segment.create_effect('Text')
 
-        self.message('Loading {}'.format(text_setup))
+        self.message(f'Loading {text_setup}')
 
         if os.path.isfile(text_setup):
             try:
@@ -1191,12 +1191,13 @@ class FindSegmentApplyText(object):
             try:
                 self.presets_xml_tree.write(self.presets_xml)
 
-                self.message('{} preset saved to {}'.format(
-                    self.line_edit_preset_name.text(), self.presets_xml))
+                self.message(f'{self.line_edit_preset_name.text()} preset saved to ' +
+                             f'{self.presets_xml}')
+
             except (IOError, OSError):
                 FlameMessageWindow(
                     'Error', 'error',
-                    'Check permissions on {}'.format(os.path.dirname(__file__)))
+                    f'Check permissions on {os.path.dirname(__file__)}')
 
         def overwrite_preset():
             """Replace pattern in presets XML tree then save to XML file."""
@@ -1211,12 +1212,12 @@ class FindSegmentApplyText(object):
             try:
                 self.presets_xml_tree.write(self.presets_xml)
 
-                self.message('{} preset saved to {}'.format(
-                    self.line_edit_preset_name.text(), self.presets_xml))
+                self.message(f'{self.line_edit_preset_name.text()} preset saved to ' +
+                             f'{self.presets_xml}')
             except (IOError, OSError):
                 FlameMessageWindow(
                     'Error', 'error',
-                    'Check permissions on {}'.format(os.path.dirname(__file__)))
+                    f'Check permissions on {os.path.dirname(__file__)}')
 
         def sort_presets():
             """Alphabetically sort presets by name attribute."""
@@ -1350,8 +1351,7 @@ class FindSegmentApplyText(object):
                     if preset.get('name') == preset_name:
                         self.presets_xml_root.remove(preset)
                         self.message(
-                            '{} preset deleted from {}'.format(
-                                preset_name, self.presets_xml))
+                            f'{preset_name} preset deleted from {self.presets_xml}')
 
                 self.presets_xml_tree.write(self.presets_xml)
 
@@ -1378,12 +1378,10 @@ class FindSegmentApplyText(object):
                 if self.progress_window.cancelled:
                     break
 
-                self.message('Proceeding with {} in {} at {}'.format(
-                    row[2], row[1], row[3]))
+                self.message(f'Proceeding with {row[2]} in {row[1]} at {row[3]}')
 
                 self.progress_window.set_text(
-                        'Apply Text TimlineFX to {} in {} at {}'.format(
-                             row[2], row[1], row[3]))
+                        f'Apply Text TimlineFX to {row[2]} in {row[1]} at {row[3]}')
 
                 self.apply_text_fx_to_segment(self.segments[int(row[0]) - 1], row[5])
 
