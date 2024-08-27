@@ -1,4 +1,4 @@
-'''
+"""
 Script Name: Apply Text TimelineFX to Segments
 Written By: Kieran Hanrahan
 
@@ -31,7 +31,7 @@ To Install:
 
     For a specific user, copy this file to:
     /opt/Autodesk/user/<user name>/python
-'''
+"""
 
 import datetime as dt
 import os
@@ -54,7 +54,7 @@ XML = 'apply_text_timeline_fx_to_segments.xml'
 
 
 class FlameButton(QtWidgets.QPushButton):
-    '''
+    """
     Custom Qt Flame Button Widget v2.1
 
     button_name: button text [str]
@@ -67,7 +67,7 @@ class FlameButton(QtWidgets.QPushButton):
 
         button = FlameButton(
             'Button Name', do_something__when_pressed, button_color='blue')
-    '''
+    """
 
     def __init__(self, button_name, connect, button_color='normal', button_width=150,
                  button_max_width=150):
@@ -79,12 +79,12 @@ class FlameButton(QtWidgets.QPushButton):
         self.setFocusPolicy(QtCore.Qt.NoFocus)
         self.clicked.connect(connect)
         if button_color == 'normal':
-            self.setStyleSheet('''
+            self.setStyleSheet("""
                 QPushButton {
                     color: rgb(154, 154, 154);
                     background-color: rgb(58, 58, 58);
                     border: none;
-                    font: 14px "Discreet"}
+                    font: 14px 'Discreet'}
                 QPushButton:hover {
                     border: 1px solid rgb(90, 90, 90)}
                 QPushButton:pressed {
@@ -98,14 +98,14 @@ class FlameButton(QtWidgets.QPushButton):
                 QToolTip {
                     color: rgb(170, 170, 170);
                     background-color: rgb(71, 71, 71);
-                    border: 10px solid rgb(71, 71, 71)}''')
+                    border: 10px solid rgb(71, 71, 71)}""")
         elif button_color == 'blue':
-            self.setStyleSheet('''
+            self.setStyleSheet("""
                 QPushButton {
                     color: rgb(190, 190, 190);
                     background-color: rgb(0, 110, 175);
                     border: none;
-                    font: 12px "Discreet"}
+                    font: 12px 'Discreet'}
                 QPushButton:hover {
                     border: 1px solid rgb(90, 90, 90)}
                 QPushButton:pressed {
@@ -118,11 +118,11 @@ class FlameButton(QtWidgets.QPushButton):
                 QToolTip {
                     color: rgb(170, 170, 170);
                     background-color: rgb(71, 71, 71);
-                    border: 10px solid rgb(71, 71, 71)}''')
+                    border: 10px solid rgb(71, 71, 71)}""")
 
 
 class FlameLabel(QtWidgets.QLabel):
-    '''
+    """
     Custom Qt Flame Label Widget v2.1
 
     label_name:  text displayed [str]
@@ -133,7 +133,7 @@ class FlameLabel(QtWidgets.QLabel):
     Usage:
 
         label = FlameLabel('Label Name', 'normal', 300)
-    '''
+    """
 
     def __init__(self, label_name, label_type='normal', label_width=150):
         super(FlameLabel, self).__init__()
@@ -146,34 +146,34 @@ class FlameLabel(QtWidgets.QLabel):
         # Set label stylesheet based on label_type
 
         if label_type == 'normal':
-            self.setStyleSheet('''
+            self.setStyleSheet("""
                 QLabel {
                     color: rgb(154, 154, 154);
-                    font: 14px "Discreet"}
+                    font: 14px 'Discreet'}
                 QLabel:disabled {
-                    color: rgb(106, 106, 106)}''')
+                    color: rgb(106, 106, 106)}""")
         elif label_type == 'underline':
             self.setAlignment(QtCore.Qt.AlignCenter)
-            self.setStyleSheet('''
+            self.setStyleSheet("""
                 QLabel {
                     color: rgb(154, 154, 154);
                     border-bottom: 1px inset rgb(40, 40, 40);
-                    font: 14px "Discreet"}
+                    font: 14px 'Discreet'}
                 QLabel:disabled {
-                    color: rgb(106, 106, 106)}''')
+                    color: rgb(106, 106, 106)}""")
         elif label_type == 'background':
-            self.setStyleSheet('''
+            self.setStyleSheet("""
                 QLabel {
                     color: rgb(154, 154, 154);
                     background-color: rgb(30, 30, 30);
                     padding-left: 5px;
-                    font: 14px "Discreet"}
+                    font: 14px 'Discreet'}
                 QLabel:disabled {
-                    color: rgb(106, 106, 106)}''')
+                    color: rgb(106, 106, 106)}""")
 
 
 class FlameLineEdit(QtWidgets.QLineEdit):
-    '''
+    """
     Custom Qt Flame Line Edit Widget v2.1
 
     Main window should include this: window.setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -185,7 +185,7 @@ class FlameLineEdit(QtWidgets.QLineEdit):
     Usage:
 
         line_edit = FlameLineEdit('Some text here')
-    '''
+    """
 
     def __init__(self, text, width=150, max_width=2000):
         super(FlameLineEdit, self).__init__()
@@ -195,7 +195,7 @@ class FlameLineEdit(QtWidgets.QLineEdit):
         self.setMinimumWidth(width)
         self.setMaximumWidth(max_width)
         self.setFocusPolicy(QtCore.Qt.ClickFocus)
-        self.setStyleSheet('''
+        self.setStyleSheet("""
             QLineEdit {
                 color: rgb(154, 154, 154);
                 background-color: rgb(55, 65, 75);
@@ -203,7 +203,7 @@ class FlameLineEdit(QtWidgets.QLineEdit):
                 selection-background-color: rgb(184, 177, 167);
                 border: 1px solid rgb(55, 65, 75);
                 padding-left: 5px;
-                font: 14px "Discreet"}
+                font: 14px 'Discreet'}
             QLineEdit:focus {background-color: rgb(73, 86, 99)}
             QLineEdit:hover {border: 1px solid rgb(90, 90, 90)}
             QLineEdit:disabled {
@@ -213,11 +213,11 @@ class FlameLineEdit(QtWidgets.QLineEdit):
             QToolTip {
                 color: rgb(170, 170, 170);
                 background-color: rgb(71, 71, 71);
-                border: none}''')
+                border: none}""")
 
 
 class FlameLineEditFileBrowse(QtWidgets.QLineEdit):
-    '''
+    """
     Custom Qt Flame Clickable Line Edit Widget with File Browser
 
     FlameLineEditFileBrowse(file_path, filter_type, window)
@@ -229,7 +229,7 @@ class FlameLineEditFileBrowse(QtWidgets.QLineEdit):
         Type of file browser will filter_type for. If set to 'dir', browser will select
         directory.  For example, 'Python (*.py)' or 'dir'
 
-    '''
+    """
 
     clicked = QtCore.Signal()
 
@@ -246,34 +246,34 @@ class FlameLineEditFileBrowse(QtWidgets.QLineEdit):
         self.setReadOnly(True)
         self.setFocusPolicy(QtCore.Qt.NoFocus)
         self.clicked.connect(self.file_browse)
-        self.setStyleSheet('''
+        self.setStyleSheet("""
             QLineEdit {
                 color: #898989;
                 background-color: #373e47;
-                font: 14px "Discreet"}
+                font: 14px 'Discreet'}
             QLineEdit:disabled {
                 color: #6a6a6a;
-                background-color: #373737}''')
+                background-color: #373737}""")
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton:
-            self.setStyleSheet('''
+            self.setStyleSheet("""
                 QLineEdit {
                     color: #bbbbbb;
                     background-color: #474e58;
-                    font: 14px "Discreet"}
+                    font: 14px 'Discreet'}
                 QLineEdit:disabled {
                     color: #6a6a6a;
-                    background-color: #373737}''')
+                    background-color: #373737}""")
             self.clicked.emit()
-            self.setStyleSheet('''
+            self.setStyleSheet("""
                 QLineEdit {
                     color: #898989;
                     background-color: #373e47;
-                    font: 14px "Discreet"}
+                    font: 14px 'Discreet'}
                 QLineEdit:disabled {
                     color: #6a6a6a;
-                    background-color: #373737}''')
+                    background-color: #373737}""")
         else:
             super().mousePressEvent(event)
 
@@ -309,7 +309,7 @@ class FlameLineEditFileBrowse(QtWidgets.QLineEdit):
 
 
 class FlameMessageWindow(QtWidgets.QDialog):
-    '''
+    """
     Custom Qt Flame Message Window v2.1
 
     message_title: text shown in top left of window ie. Confirm Operation [str]
@@ -334,7 +334,7 @@ class FlameMessageWindow(QtWidgets.QDialog):
         if FlameMessageWindow(
             'Confirm Operation', 'confirm', 'some important message', window):
                 do something
-    '''
+    """
 
     def __init__(self, message_title, message_type, message, parent=None):
         super(FlameMessageWindow, self).__init__()
@@ -356,13 +356,13 @@ class FlameMessageWindow(QtWidgets.QDialog):
         self.grid = QtWidgets.QGridLayout()
 
         self.main_label = FlameLabel(message_title, 'normal', label_width=500)
-        self.main_label.setStyleSheet('''
+        self.main_label.setStyleSheet("""
             color: rgb(154, 154, 154);
-            font: 18px "Discreet"''')
+            font: 18px 'Discreet'""")
 
         self.message_text_edit = QtWidgets.QTextEdit(message)
         self.message_text_edit.setDisabled(True)
-        self.message_text_edit.setStyleSheet('''
+        self.message_text_edit.setStyleSheet("""
             QTextEdit {
                 color: rgb(154, 154, 154);
                 background-color: rgb(36, 36, 36);
@@ -371,7 +371,7 @@ class FlameMessageWindow(QtWidgets.QDialog):
                 border: none;
                 padding-left: 20px;
                 padding-right: 20px;
-                font: 12px "Discreet"}''')
+                font: 12px 'Discreet'}""")
 
         if message_type in ('confirm', 'warning'):
             self.confirm_button = FlameButton(
@@ -451,7 +451,7 @@ class FlameMessageWindow(QtWidgets.QDialog):
 
 
 class FlameProgressWindow(QtWidgets.QDialog):
-    '''
+    """
     Custom Qt Flame Progress Window
 
     FlameProgressWindow(window_title, num_to_do[, text=None, enable_done_button=False,
@@ -478,7 +478,7 @@ class FlameProgressWindow(QtWidgets.QDialog):
         To enable or disable done button - True or False:
 
             self.progress_window.enable_done_button(True)
-    '''
+    """
 
     def __init__(
             self,
@@ -529,12 +529,12 @@ class FlameProgressWindow(QtWidgets.QDialog):
         self.grid = QtWidgets.QGridLayout()
 
         self.main_label = FlameLabel(window_title, label_width=500)
-        self.main_label.setStyleSheet('''
+        self.main_label.setStyleSheet("""
             color: rgb(154, 154, 154);
-            font: 18px "Discreet"''')
+            font: 18px 'Discreet'""")
         self.message_text_edit = QtWidgets.QTextEdit('')
         self.message_text_edit.setDisabled(True)
-        self.message_text_edit.setStyleSheet('''
+        self.message_text_edit.setStyleSheet("""
             QTextEdit {
                 color: rgb(154, 154, 154);
                 background-color: rgb(36, 36, 36);
@@ -543,7 +543,7 @@ class FlameProgressWindow(QtWidgets.QDialog):
                 border: none;
                 padding-left: 20px;
                 padding-right: 20px;
-                font: 12px "Discreet"}''')
+                font: 12px 'Discreet'}""")
         self.message_text_edit.setText(text)
 
         # Progress bar
@@ -552,14 +552,14 @@ class FlameProgressWindow(QtWidgets.QDialog):
         self.progress_bar.setMaximum(num_to_do)
         self.progress_bar.setMaximumHeight(5)
         self.progress_bar.setTextVisible(False)
-        self.progress_bar.setStyleSheet('''
+        self.progress_bar.setStyleSheet("""
             QProgressBar {
                 color: rgb(154, 154, 154);
                 background-color: rgb(45, 45, 45);
-                font: 14px "Discreet";
+                font: 14px 'Discreet';
                 border: none}
             QProgressBar:chunk {
-                background-color: rgb(0, 110, 176)}''')
+                background-color: rgb(0, 110, 176)}""")
 
         self.cancel_button = FlameButton(
                 'Cancel',
@@ -649,12 +649,12 @@ class FlameProgressWindow(QtWidgets.QDialog):
 
 
 class FlamePushButton(QtWidgets.QPushButton):
-    '''
+    """
     Custom Qt Flame Push Button Widget
 
     This is the original Push Button Widget with just the StyleSheet from the most
     recent iteration on pyflame.com.
-    '''
+    """
 
     def __init__(self, name, parent, checked, connect, *args, **kwargs):
         super(FlamePushButton, self).__init__(*args, **kwargs)
@@ -667,7 +667,7 @@ class FlamePushButton(QtWidgets.QPushButton):
         self.setFocusPolicy(QtCore.Qt.NoFocus)
         self.setMinimumSize(150, 28)
         self.setMaximumSize(150, 28)
-        self.setStyleSheet('''
+        self.setStyleSheet("""
             QPushButton {
                 color: rgb(154, 154, 154);
                 background-color: qlineargradient(
@@ -685,7 +685,7 @@ class FlamePushButton(QtWidgets.QPushButton):
                     stop: .94 rgb(44, 54, 68));
                 border-left: 1px solid rgb(58, 58, 58);
                 border-right: 1px solid rgb(44, 54, 68);
-                padding-left: 5px; font: 14px "Discreet"}
+                padding-left: 5px; font: 14px 'Discreet'}
             QPushButton:checked {
                 color: rgb(217, 217, 217);
                 background-color: qlineargradient(
@@ -717,11 +717,11 @@ class FlamePushButton(QtWidgets.QPushButton):
             QToolTip {
                 color: rgb(170, 170, 170);
                 background-color: rgb(71, 71, 71);
-                border: 10px solid rgb(71, 71, 71)}''')
+                border: 10px solid rgb(71, 71, 71)}""")
 
 
 class FlamePushButtonMenu(QtWidgets.QPushButton):
-    '''
+    """
     Custom Qt Flame Menu Push Button Widget v3.1
 
     button_name: text displayed on button [str]
@@ -746,7 +746,7 @@ class FlamePushButtonMenu(QtWidgets.QPushButton):
         Started as v2.1
         v3.1 adds a functionionality to set the width of the menu to be the same as the
         button.
-    '''
+    """
 
     def __init__(self, button_name, menu_options, menu_width=240, max_menu_width=2000,
                  menu_action=None):
@@ -761,12 +761,12 @@ class FlamePushButtonMenu(QtWidgets.QPushButton):
         self.setMinimumWidth(menu_width)
         self.setMaximumWidth(max_menu_width)  # is max necessary?
         self.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.setStyleSheet('''
+        self.setStyleSheet("""
             QPushButton {
                 color: rgb(154, 154, 154);
                 background-color: rgb(45, 55, 68);
                 border: none;
-                font: 14px "Discreet";
+                font: 14px 'Discreet';
                 padding-left: 9px;
                 text-align: left}
             QPushButton:disabled {
@@ -779,30 +779,30 @@ class FlamePushButtonMenu(QtWidgets.QPushButton):
             QToolTip {
                 color: rgb(170, 170, 170);
                 background-color: rgb(71, 71, 71);
-                border: 10px solid rgb(71, 71, 71)}''')
+                border: 10px solid rgb(71, 71, 71)}""")
 
         # Menu
         def match_width():
-            '''Match menu width to the parent push button width.'''
+            """Match menu width to the parent push button width."""
             self.pushbutton_menu.setMinimumWidth(self.size().width())
 
         self.pushbutton_menu = QtWidgets.QMenu(self)
         self.pushbutton_menu.setFocusPolicy(QtCore.Qt.NoFocus)
         self.pushbutton_menu.aboutToShow.connect(match_width)
-        self.pushbutton_menu.setStyleSheet('''
+        self.pushbutton_menu.setStyleSheet("""
             QMenu {
                 color: rgb(154, 154, 154);
                 background-color: rgb(45, 55, 68);
-                border: none; font: 14px "Discreet"}
+                border: none; font: 14px 'Discreet'}
             QMenu::item:selected {
                 color: rgb(217, 217, 217);
-                background-color: rgb(58, 69, 81)}''')
+                background-color: rgb(58, 69, 81)}""")
 
         self.populate_menu(menu_options)
         self.setMenu(self.pushbutton_menu)
 
     def create_menu(self, option, menu_action):
-        '''Create menu.'''
+        """Create menu."""
 
         self.setText(option)
 
@@ -810,7 +810,7 @@ class FlamePushButtonMenu(QtWidgets.QPushButton):
             menu_action()
 
     def populate_menu(self, options):
-        '''Empty the menu then reassemble the options.'''
+        """Empty the menu then reassemble the options."""
 
         self.pushbutton_menu.clear()
 
@@ -820,7 +820,7 @@ class FlamePushButtonMenu(QtWidgets.QPushButton):
 
 
 class FlameTokenPushButton(QtWidgets.QPushButton):
-    '''
+    """
     Custom Qt Flame Token Push Button Widget v2.1
 
     button_name: Text displayed on button [str]
@@ -833,7 +833,7 @@ class FlameTokenPushButton(QtWidgets.QPushButton):
 
         token_dict = {'Token 1': '<Token1>', 'Token2': '<Token2>'}
         token_push_button = FlameTokenPushButton('Add Token', token_dict, token_dest)
-    '''
+    """
 
     def __init__(self, button_name, token_dict, token_dest, button_width=110,
                  button_max_width=300):
@@ -844,12 +844,12 @@ class FlameTokenPushButton(QtWidgets.QPushButton):
         self.setMinimumWidth(button_width)
         self.setMaximumWidth(button_max_width)
         self.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.setStyleSheet('''
+        self.setStyleSheet("""
             QPushButton {
                 color: rgb(154, 154, 154);
                 background-color: rgb(45, 55, 68);
                 border: none;
-                font: 14px "Discreet";
+                font: 14px 'Discreet';
                 padding-left: 6px;
                 text-align: left}
             QPushButton:hover {
@@ -864,7 +864,7 @@ class FlameTokenPushButton(QtWidgets.QPushButton):
             QToolTip {
                 color: rgb(170, 170, 170);
                 background-color: rgb(71, 71, 71);
-                border: 10px solid rgb(71, 71, 71)}''')
+                border: 10px solid rgb(71, 71, 71)}""")
 
         def token_action_menu():
 
@@ -881,21 +881,21 @@ class FlameTokenPushButton(QtWidgets.QPushButton):
 
         token_menu = QtWidgets.QMenu(self)
         token_menu.setFocusPolicy(QtCore.Qt.NoFocus)
-        token_menu.setStyleSheet('''
+        token_menu.setStyleSheet("""
             QMenu {
                 color: rgb(154, 154, 154);
                 background-color: rgb(45, 55, 68);
-                border: none; font: 14px "Discreet"}
+                border: none; font: 14px 'Discreet'}
             QMenu::item:selected {
                 color: rgb(217, 217, 217);
-                background-color: rgb(58, 69, 81)}''')
+                background-color: rgb(58, 69, 81)}""")
 
         self.setMenu(token_menu)
         token_action_menu()
 
 
 class FlameTableWidget(QtWidgets.QTableWidget):
-    '''
+    """
     Custom Qt Widget Flame Table Widget v1.0.0
 
     Attributes:
@@ -905,7 +905,7 @@ class FlameTableWidget(QtWidgets.QTableWidget):
     Usage:
 
         flame_table = FlameTableWidget(['header1', 'header2'])
-    '''
+    """
 
     def __init__(self, column_headers):
         super(FlameTableWidget, self).__init__()
@@ -917,12 +917,12 @@ class FlameTableWidget(QtWidgets.QTableWidget):
         self.setSortingEnabled(True)
         self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.setHorizontalHeaderLabels(column_headers)
-        self.setStyleSheet('''
+        self.setStyleSheet("""
             QTableWidget {
                 background-color: rgb(33, 33, 33);
                 alternate-background-color: rgb(36, 36, 36);
                 color: rgb(190, 190, 190);
-                font: 14px "Discreet";
+                font: 14px 'Discreet';
                 gridline-color: rgb(33, 33, 33)}
             QTableWidget::item {
                 border: 0px 10px 0px 0px;
@@ -932,27 +932,27 @@ class FlameTableWidget(QtWidgets.QTableWidget):
                 background-color: #474747}
             QHeaderView::section {
                 color: black;
-                font: 14px "Discreet"}''')
+                font: 14px 'Discreet'}""")
 
         self.header_horiz = self.horizontalHeader()
         self.header_horiz.setDefaultAlignment(QtCore.Qt.AlignLeft)
-        self.header_horiz.setStyleSheet('''
+        self.header_horiz.setStyleSheet("""
             ::section {
                 border: 0px;
                 color: rgb(177, 177, 177);
                 background-color: rgb(19, 21, 23);
-                padding: 3px 3px 0px 8px}''')
+                padding: 3px 3px 0px 8px}""")
 
         self.header_vert = self.verticalHeader()
         self.header_vert.setDefaultSectionSize(24)
         self.header_vert.setVisible(False)
-        self.header_vert.setStyleSheet('''
+        self.header_vert.setStyleSheet("""
                 ::section {
                     border: 0px;
-                    padding 0px}''')
+                    padding 0px}""")
 
     def add_item(self, row, column, item):
-        '''Add row if necessary, then add item to column.'''
+        """Add row if necessary, then add item to column."""
 
         if row + 1 > self.rowCount():
             self.insertRow(row)
@@ -960,12 +960,12 @@ class FlameTableWidget(QtWidgets.QTableWidget):
         self.setItem(row, column, QtWidgets.QTableWidgetItem(item))
 
     def get_data_by_row_number(self, row_num):
-        '''
+        """
         Convenience method to get data from specific row number.
 
         Returns:
             A list of the data per column.
-        '''
+        """
 
         data = []
 
@@ -975,12 +975,12 @@ class FlameTableWidget(QtWidgets.QTableWidget):
         return data
 
     def get_selected_row_data(self):
-        '''
+        """
         Convenience method to get data from selected rows.
 
         Returns:
             A list containing a list for each selected row.
-        '''
+        """
 
         data = []
 
@@ -997,10 +997,10 @@ class FlameTableWidget(QtWidgets.QTableWidget):
 
 
 class FindSegmentApplyText(object):
-    '''
+    """
     Find specific segments in a selection, assemble a Text TimelineFX setup path using
     tokens, then load the setup to the specified segments.
-    '''
+    """
 
     def __init__(self, selection):
 
@@ -1046,13 +1046,13 @@ class FindSegmentApplyText(object):
 
     @staticmethod
     def message(string):
-        '''Print message to shell window and append global MESSAGE_PREFIX.'''
+        """Print message to shell window and append global MESSAGE_PREFIX."""
 
         print(' '.join([MESSAGE_PREFIX, string]))
 
     @staticmethod
     def get_parent_sequence(child):
-        '''Returns object of the container sequence for the given flame object.'''
+        """Returns object of the container sequence for the given flame object."""
 
         parents = []
 
@@ -1069,8 +1069,8 @@ class FindSegmentApplyText(object):
         return parent_sequence
 
     def load_preset_by_index_element(self, index, element):
-        '''ElementTree saves empty string as None.  Convert None back to empty
-        string.'''
+        """ElementTree saves empty string as None.  Convert None back to empty
+        string."""
 
         preset_element = (
             self.presets_xml_root.findall('preset')[index].find(element).text)
@@ -1081,7 +1081,7 @@ class FindSegmentApplyText(object):
         return preset_element
 
     def load_path(self):
-        '''Load the first preset's path or use the default pattern.'''
+        """Load the first preset's path or use the default pattern."""
 
         if self.presets_xml_root.findall('preset'):
             self.path = self.load_preset_by_index_element(0, 'path')
@@ -1089,7 +1089,7 @@ class FindSegmentApplyText(object):
             self.path = DEFAULT_PATH
 
     def load_pattern(self):
-        '''Load the first preset's pattern or use the default pattern.'''
+        """Load the first preset's pattern or use the default pattern."""
 
         if self.presets_xml_root.findall('preset'):
             self.pattern = self.load_preset_by_index_element(0, 'pattern')
@@ -1097,7 +1097,7 @@ class FindSegmentApplyText(object):
             self.pattern = DEFAULT_PATTERN
 
     def load_find(self):
-        '''Load the first preset's search term or use the default pattern.'''
+        """Load the first preset's search term or use the default pattern."""
 
         if self.presets_xml_root.findall('preset'):
             self.find = self.load_preset_by_index_element(0, 'find')
@@ -1105,18 +1105,18 @@ class FindSegmentApplyText(object):
             self.find = ''
 
     def load_presets(self):
-        '''Load preset file if preset and store XML tree & root'''
+        """Load preset file if preset and store XML tree & root"""
 
         if os.path.isfile(self.presets_xml):
             self.presets_xml_tree = et.parse(self.presets_xml)
         else:
-            default = '''<presets></presets>'''
+            default = """<presets></presets>"""
             self.presets_xml_tree = et.ElementTree(et.fromstring(default))
 
         self.presets_xml_root = self.presets_xml_tree.getroot()
 
     def find_segments(self):
-        '''Assemble list of all PySegments in selected Sequences.'''
+        """Assemble list of all PySegments in selected Sequences."""
 
         self.message('Scanning for segments...')
 
@@ -1135,7 +1135,7 @@ class FindSegmentApplyText(object):
         self.message('Found {} segments'.format(len(self.segments)))
 
     def generate_segment_tokens(self, segment):
-        '''Populate the token list.'''
+        """Populate the token list."""
 
         self.segment_tokens['am/pm'] = [
                 '<pp>', self.now.strftime('%p').lower()]
@@ -1163,7 +1163,7 @@ class FindSegmentApplyText(object):
                 '<YYYY>', self.now.strftime('%Y')]
 
     def resolve_tokens(self):
-        '''Replace tokens with values.'''
+        """Replace tokens with values."""
 
         result = self.pattern
 
@@ -1174,12 +1174,12 @@ class FindSegmentApplyText(object):
         return result
 
     def assemble_filename(self):
-        '''Assemble finished filename for row in the Table.'''
+        """Assemble finished filename for row in the Table."""
 
         return os.path.join(self.path, self.resolve_tokens())
 
     def apply_text_fx_to_segment(self, segment, text_setup):
-        '''Apply Text TimelineFX to segment, then load setup.'''
+        """Apply Text TimelineFX to segment, then load setup."""
 
         for effect in segment.effects:
             if effect.type == 'Text':
@@ -1201,10 +1201,10 @@ class FindSegmentApplyText(object):
             self.message('File does not exist!')
 
     def save_preset_window(self):
-        '''Smaller window with save dialog.'''
+        """Smaller window with save dialog."""
 
         def duplicate_check():
-            '''Check that preset to be saved would not be a duplicate.'''
+            """Check that preset to be saved would not be a duplicate."""
 
             duplicate = False
             preset_name = self.line_edit_preset_name.text()
@@ -1216,7 +1216,7 @@ class FindSegmentApplyText(object):
             return duplicate
 
         def save_preset():
-            '''Save new preset to XML file.'''
+            """Save new preset to XML file."""
 
             new_preset = et.Element('preset', name=self.line_edit_preset_name.text())
             new_path = et.SubElement(new_preset, 'path')
@@ -1240,7 +1240,7 @@ class FindSegmentApplyText(object):
                     'Check permissions on {}'.format(os.path.dirname(__file__)))
 
         def overwrite_preset():
-            '''Replace pattern in presets XML tree then save to XML file.'''
+            """Replace pattern in presets XML tree then save to XML file."""
 
             preset_name = self.line_edit_preset_name.text()
 
@@ -1261,14 +1261,14 @@ class FindSegmentApplyText(object):
                     'Check permissions on {}'.format(os.path.dirname(__file__)))
 
         def sort_presets():
-            '''Alphabetically sort presets by name attribute.'''
+            """Alphabetically sort presets by name attribute."""
 
             self.presets_xml_root[:] = sorted(
                 self.presets_xml_root,
                 key=lambda child: (child.tag, child.get('name')))
 
         def save_button():
-            '''Triggered when the Save button at the bottom is pressed.'''
+            """Triggered when the Save button at the bottom is pressed."""
 
             duplicate = duplicate_check()
 
@@ -1293,7 +1293,7 @@ class FindSegmentApplyText(object):
                 self.save_window.close()
 
         def cancel_button():
-            '''Triggered when the Cancel button at the bottom is pressed.'''
+            """Triggered when the Cancel button at the bottom is pressed."""
 
             self.save_window.close()
 
@@ -1348,10 +1348,10 @@ class FindSegmentApplyText(object):
         return self.save_window
 
     def main_window(self):
-        '''The main GUI.'''
+        """The main GUI."""
 
         def get_selected_preset():
-            '''Get preset that should be displayed or return empty string.'''
+            """Get preset that should be displayed or return empty string."""
 
             try:
                 selected_preset = self.presets_xml_root.findall('preset')[0].get('name')
@@ -1361,7 +1361,7 @@ class FindSegmentApplyText(object):
             return selected_preset
 
         def get_preset_names():
-            '''Return just the names of the presets '''
+            """Return just the names of the presets """
 
             try:
                 preset_names = [
@@ -1373,7 +1373,7 @@ class FindSegmentApplyText(object):
             return preset_names
 
         def update_preset():
-            '''Update fields when preset is changed.'''
+            """Update fields when preset is changed."""
 
             preset_name = self.btn_preset.text()
 
@@ -1387,7 +1387,7 @@ class FindSegmentApplyText(object):
                         break  # should not be any duplicates
 
         def preset_delete_button():
-            '''Triggered when the Delete button on the Preset line is pressed.'''
+            """Triggered when the Delete button on the Preset line is pressed."""
 
             if FlameMessageWindow(
                     'Confirm Operation', 'confirm', 'Are you sure want to'
@@ -1411,12 +1411,12 @@ class FindSegmentApplyText(object):
             update_preset()
 
         def preset_save_button():
-            '''Triggered when the Save button the Presets line is pressed.'''
+            """Triggered when the Save button the Presets line is pressed."""
 
             self.save_preset_window()
 
         def okay_button():
-            '''Close window and process the artist's selected selection.'''
+            """Close window and process the artist's selected selection."""
 
             self.window.close()
 
@@ -1449,13 +1449,13 @@ class FindSegmentApplyText(object):
                 self.message('Done!')
 
         def close_button():
-            '''Close the window.'''
+            """Close the window."""
 
             self.window.close()
             self.message('Window closed!')
 
         def filter_table():
-            '''Updates the table when anything is typed in the Find bar.'''
+            """Updates the table when anything is typed in the Find bar."""
 
             for num in range(self.segments_table.rowCount()):
                 if self.find in self.segments_table.get_data_by_row_number(num)[2]:
@@ -1464,14 +1464,14 @@ class FindSegmentApplyText(object):
                     self.segments_table.hideRow(num)
 
         def update_filename_column():
-            '''Update the filename column when the filename line edit is changed.'''
+            """Update the filename column when the filename line edit is changed."""
 
             for count, segment in enumerate(self.segments):
                 self.generate_segment_tokens(segment)
                 self.segments_table.add_item(count, 5, self.assemble_filename())
 
         def verify_filename_column_exists():
-            '''Check if filename for text setup exists, if not, color cell text red.'''
+            """Check if filename for text setup exists, if not, color cell text red."""
 
             for row in range(self.segments_table.rowCount()):
                 if not os.path.isfile(
@@ -1480,13 +1480,13 @@ class FindSegmentApplyText(object):
                             QtCore.Qt.ForegroundRole, QtGui.QColor(190, 34, 34))
 
         def find_changed():
-            '''Everything to refresh when the find line edit is changed.'''
+            """Everything to refresh when the find line edit is changed."""
 
             self.find = self.find_line_edit.text()
             filter_table()
 
         def path_changed():
-            '''Everything to refresh when the path line edit is changed.'''
+            """Everything to refresh when the path line edit is changed."""
 
             self.path = self.path_line_edit.text()
             update_filename_column()
@@ -1494,7 +1494,7 @@ class FindSegmentApplyText(object):
             verify_filename_column_exists()
 
         def pattern_changed():
-            '''Everything to refresh when the pattern line edit is changed.'''
+            """Everything to refresh when the pattern line edit is changed."""
 
             self.pattern = self.pattern_line_edit.text()
             update_filename_column()
@@ -1502,7 +1502,7 @@ class FindSegmentApplyText(object):
             verify_filename_column_exists()
 
         def find_toggle():
-            ''' '''
+            """ """
 
             if self.find:
                 self.btn_find_segment.setChecked(True)
@@ -1512,7 +1512,7 @@ class FindSegmentApplyText(object):
                 self.find_line_edit.setEnabled(False)
 
         def find_segment_button():
-            ''' '''
+            """ """
 
             if not self.find_line_edit.isEnabled():
                 self.find = self.find_line_edit.text()
@@ -1523,7 +1523,7 @@ class FindSegmentApplyText(object):
             filter_table()
 
         def populate_table():
-            '''Fill in the table.'''
+            """Fill in the table."""
 
             for count, segment in enumerate(self.segments):
                 self.generate_segment_tokens(segment)
@@ -1650,7 +1650,7 @@ class FindSegmentApplyText(object):
 
 
 def scope_timeline(selection):
-    '''Filter for only PyClips.'''
+    """Filter for only PyClips."""
 
     for item in selection:
         if isinstance(item, flame.PyClip):
@@ -1659,7 +1659,7 @@ def scope_timeline(selection):
 
 
 def get_media_panel_custom_ui_actions():
-    '''Python hook to add custom right click menu.'''
+    """Python hook to add custom right click menu."""
 
     return [{'name': 'Apply...',
              'actions': [{'name': 'Text TimelineFX to Segments',
