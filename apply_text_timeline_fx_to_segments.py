@@ -1588,10 +1588,7 @@ class FindSegmentApplyText(object):
 
 def scope_timeline(selection):
     """Filter for only PyClips."""
-    for item in selection:
-        if isinstance(item, flame.PyClip):
-            return True
-    return False
+    return any(isinstance(item, flame.PyClip) for item in selection)
 
 
 def get_media_panel_custom_ui_actions():
