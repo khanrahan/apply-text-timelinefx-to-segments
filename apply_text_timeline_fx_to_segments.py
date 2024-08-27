@@ -623,11 +623,9 @@ class FlameProgressWindow(QtWidgets.QDialog):
         painter.drawLine(0, 0, 0, 330)
 
     def mousePressEvent(self, event):
-
         self.oldPosition = event.globalPos()
 
     def mouseMoveEvent(self, event):
-
         try:
             delta = QtCore.QPoint(event.globalPos() - self.oldPosition)
             self.move(self.x() + delta.x(), self.y() + delta.y())
@@ -978,7 +976,6 @@ class FindSegmentApplyText:
 
     def __init__(self, selection):
         """Create FindSegmentApplyText object with starting attributes."""
-
         self.selection = selection
 
         self.message(TITLE_VERSION)
