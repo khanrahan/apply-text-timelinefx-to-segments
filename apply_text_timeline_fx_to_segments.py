@@ -2,13 +2,13 @@
 Script Name: Apply Text TimelineFX to Segments
 Written By: Kieran Hanrahan
 
-Script Version: 1.5.3
+Script Version: 2.0.0
 Flame Version: 2021.1
 
 URL: http://github.com/khanrahan/apply-text-timelinefx-to-segments
 
 Creation Date: 06.23.23
-Update Date: 11.01.23
+Update Date: 08.26.24
 
 Description:
 
@@ -43,7 +43,7 @@ import flame
 from PySide2 import QtCore, QtGui, QtWidgets
 
 TITLE = 'Apply Text TimelineFX to Segments'
-VERSION_INFO = (1, 5, 3, 'dev')
+VERSION_INFO = (2, 0, 0)
 VERSION = '.'.join([str(num) for num in VERSION_INFO])
 TITLE_VERSION = f'{TITLE} v{VERSION}'
 MESSAGE_PREFIX = '[PYTHON]'
