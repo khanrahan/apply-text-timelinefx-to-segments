@@ -977,6 +977,7 @@ class FindSegmentApplyText:
     """
 
     def __init__(self, selection):
+        """Create FindSegmentApplyText object with starting attributes."""
 
         self.selection = selection
 
@@ -1442,7 +1443,7 @@ class FindSegmentApplyText:
             verify_filename_column_exists()
 
         def find_toggle():
-            """ """
+            """Toggle UI elements based on find."""
             if self.find:
                 self.btn_find_segment.setChecked(True)
                 self.find_line_edit.setEnabled(True)
@@ -1451,7 +1452,7 @@ class FindSegmentApplyText:
                 self.find_line_edit.setEnabled(False)
 
         def find_segment_button():
-            """ """
+            """Excute when Find Segment button is pressed."""
             if not self.find_line_edit.isEnabled():
                 self.find = self.find_line_edit.text()
                 self.find_line_edit.setEnabled(True)
