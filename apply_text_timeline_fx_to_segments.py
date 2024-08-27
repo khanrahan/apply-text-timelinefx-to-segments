@@ -969,7 +969,7 @@ class FlameTableWidget(QtWidgets.QTableWidget):
         return data
 
 
-class FindSegmentApplyText(object):
+class FindSegmentApplyText:
     """Find segments and load text timeline FX setups.
 
     Find specific segments in a selection, assemble a Text TimelineFX setup path using
