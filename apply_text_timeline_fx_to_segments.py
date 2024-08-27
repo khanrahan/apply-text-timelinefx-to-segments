@@ -54,8 +54,7 @@ XML = 'apply_text_timeline_fx_to_segments.xml'
 
 
 class FlameButton(QtWidgets.QPushButton):
-    """
-    Custom Qt Flame Button Widget v2.1
+    """Custom Qt Flame Button Widget v2.1
 
     button_name: button text [str]
     connect: execute when clicked [function]
@@ -64,7 +63,6 @@ class FlameButton(QtWidgets.QPushButton):
     button_max_width: (optional) default is 150 [int]
 
     Usage:
-
         button = FlameButton(
             'Button Name', do_something__when_pressed, button_color='blue')
     """
@@ -122,8 +120,7 @@ class FlameButton(QtWidgets.QPushButton):
 
 
 class FlameLabel(QtWidgets.QLabel):
-    """
-    Custom Qt Flame Label Widget v2.1
+    """Custom Qt Flame Label Widget v2.1
 
     label_name:  text displayed [str]
     label_type:  (optional) select from different styles:
@@ -131,7 +128,6 @@ class FlameLabel(QtWidgets.QLabel):
     label_width: (optional) default is 150 [int]
 
     Usage:
-
         label = FlameLabel('Label Name', 'normal', 300)
     """
 
@@ -173,8 +169,7 @@ class FlameLabel(QtWidgets.QLabel):
 
 
 class FlameLineEdit(QtWidgets.QLineEdit):
-    """
-    Custom Qt Flame Line Edit Widget v2.1
+    """Custom Qt Flame Line Edit Widget v2.1
 
     Main window should include this: window.setFocusPolicy(QtCore.Qt.StrongFocus)
 
@@ -183,7 +178,6 @@ class FlameLineEdit(QtWidgets.QLineEdit):
     max_width: (optional) maximum width of widget. default is 2000. [int]
 
     Usage:
-
         line_edit = FlameLineEdit('Some text here')
     """
 
@@ -217,8 +211,7 @@ class FlameLineEdit(QtWidgets.QLineEdit):
 
 
 class FlameLineEditFileBrowse(QtWidgets.QLineEdit):
-    """
-    Custom Qt Flame Clickable Line Edit Widget with File Browser
+    """Custom Qt Flame Clickable Line Edit Widget with File Browser
 
     FlameLineEditFileBrowse(file_path, filter_type, window)
 
@@ -309,8 +302,7 @@ class FlameLineEditFileBrowse(QtWidgets.QLineEdit):
 
 
 class FlameMessageWindow(QtWidgets.QDialog):
-    """
-    Custom Qt Flame Message Window v2.1
+    """Custom Qt Flame Message Window v2.1
 
     message_title: text shown in top left of window ie. Confirm Operation [str]
     message_type: confirm, message, error, warning [str] confirm and warning return True
@@ -319,14 +311,12 @@ class FlameMessageWindow(QtWidgets.QDialog):
     parent: optional - parent window [object]
 
     Message Window Types:
-
         confirm: confirm and cancel button / grey left bar - returns True or False
         message: ok button / blue left bar
         error: ok button / yellow left bar
         warning: confirm and cancel button / red left bar - returns True of False
 
     Usage:
-
         FlameMessageWindow('Error', 'error', 'some important message')
 
         or
@@ -451,8 +441,7 @@ class FlameMessageWindow(QtWidgets.QDialog):
 
 
 class FlameProgressWindow(QtWidgets.QDialog):
-    """
-    Custom Qt Flame Progress Window
+    """Custom Qt Flame Progress Window
 
     FlameProgressWindow(window_title, num_to_do[, text=None, enable_done_button=False,
                         parent=None])
@@ -463,7 +452,6 @@ class FlameProgressWindow(QtWidgets.QDialog):
     enable_cancel_button: enable cancel button, default is False [bool]
 
     Examples:
-
         To create window:
 
             self.progress_window = FlameProgressWindow(
@@ -649,8 +637,7 @@ class FlameProgressWindow(QtWidgets.QDialog):
 
 
 class FlamePushButton(QtWidgets.QPushButton):
-    """
-    Custom Qt Flame Push Button Widget
+    """Custom Qt Flame Push Button Widget
 
     This is the original Push Button Widget with just the StyleSheet from the most
     recent iteration on pyflame.com.
@@ -721,8 +708,7 @@ class FlamePushButton(QtWidgets.QPushButton):
 
 
 class FlamePushButtonMenu(QtWidgets.QPushButton):
-    """
-    Custom Qt Flame Menu Push Button Widget v3.1
+    """Custom Qt Flame Menu Push Button Widget v3.1
 
     button_name: text displayed on button [str]
     menu_options: list of options show when button is pressed [list]
@@ -731,7 +717,6 @@ class FlamePushButtonMenu(QtWidgets.QPushButton):
     menu_action: (optional) execute when button is changed. [function]
 
     Usage:
-
         push_button_menu_options = ['Item 1', 'Item 2', 'Item 3', 'Item 4']
         menu_push_button = FlamePushButtonMenu(
             'push_button_name', push_button_menu_options)
@@ -803,7 +788,6 @@ class FlamePushButtonMenu(QtWidgets.QPushButton):
 
     def create_menu(self, option, menu_action):
         """Create menu."""
-
         self.setText(option)
 
         if menu_action:
@@ -811,7 +795,6 @@ class FlamePushButtonMenu(QtWidgets.QPushButton):
 
     def populate_menu(self, options):
         """Empty the menu then reassemble the options."""
-
         self.pushbutton_menu.clear()
 
         for option in options:
@@ -820,8 +803,7 @@ class FlamePushButtonMenu(QtWidgets.QPushButton):
 
 
 class FlameTokenPushButton(QtWidgets.QPushButton):
-    """
-    Custom Qt Flame Token Push Button Widget v2.1
+    """Custom Qt Flame Token Push Button Widget v2.1
 
     button_name: Text displayed on button [str]
     token_dict: Dictionary defining tokens. {'Token Name': '<Token>'} [dict]
@@ -830,7 +812,6 @@ class FlameTokenPushButton(QtWidgets.QPushButton):
     button_max_width: (optional) default is 300 [int]
 
     Usage:
-
         token_dict = {'Token 1': '<Token1>', 'Token2': '<Token2>'}
         token_push_button = FlameTokenPushButton('Add Token', token_dict, token_dest)
     """
@@ -895,15 +876,12 @@ class FlameTokenPushButton(QtWidgets.QPushButton):
 
 
 class FlameTableWidget(QtWidgets.QTableWidget):
-    """
-    Custom Qt Widget Flame Table Widget v1.0.0
+    """Custom Qt Widget Flame Table Widget v1.0.0
 
     Attributes:
-
         column_headers: list of headers for the table
 
     Usage:
-
         flame_table = FlameTableWidget(['header1', 'header2'])
     """
 
@@ -953,20 +931,17 @@ class FlameTableWidget(QtWidgets.QTableWidget):
 
     def add_item(self, row, column, item):
         """Add row if necessary, then add item to column."""
-
         if row + 1 > self.rowCount():
             self.insertRow(row)
 
         self.setItem(row, column, QtWidgets.QTableWidgetItem(item))
 
     def get_data_by_row_number(self, row_num):
-        """
-        Convenience method to get data from specific row number.
+        """Convenience method to get data from specific row number.
 
         Returns:
             A list of the data per column.
         """
-
         data = []
 
         for column in range(self.columnCount()):
@@ -975,13 +950,11 @@ class FlameTableWidget(QtWidgets.QTableWidget):
         return data
 
     def get_selected_row_data(self):
-        """
-        Convenience method to get data from selected rows.
+        """Convenience method to get data from selected rows.
 
         Returns:
             A list containing a list for each selected row.
         """
-
         data = []
 
         for row in self.selectionModel().selectedRows():  # row is QModelIndex object
@@ -997,7 +970,8 @@ class FlameTableWidget(QtWidgets.QTableWidget):
 
 
 class FindSegmentApplyText(object):
-    """
+    """Find segments and load text timeline FX setups.
+
     Find specific segments in a selection, assemble a Text TimelineFX setup path using
     tokens, then load the setup to the specified segments.
     """
@@ -1047,13 +1021,11 @@ class FindSegmentApplyText(object):
     @staticmethod
     def message(string):
         """Print message to shell window and append global MESSAGE_PREFIX."""
-
         print(' '.join([MESSAGE_PREFIX, string]))
 
     @staticmethod
     def get_parent_sequence(child):
         """Returns object of the container sequence for the given flame object."""
-
         parents = []
 
         while child:
@@ -1069,9 +1041,7 @@ class FindSegmentApplyText(object):
         return parent_sequence
 
     def load_preset_by_index_element(self, index, element):
-        """ElementTree saves empty string as None.  Convert None back to empty
-        string."""
-
+        """Load preset and replace None with empty string."""
         preset_element = (
             self.presets_xml_root.findall('preset')[index].find(element).text)
 
@@ -1082,7 +1052,6 @@ class FindSegmentApplyText(object):
 
     def load_path(self):
         """Load the first preset's path or use the default pattern."""
-
         if self.presets_xml_root.findall('preset'):
             self.path = self.load_preset_by_index_element(0, 'path')
         else:
@@ -1090,7 +1059,6 @@ class FindSegmentApplyText(object):
 
     def load_pattern(self):
         """Load the first preset's pattern or use the default pattern."""
-
         if self.presets_xml_root.findall('preset'):
             self.pattern = self.load_preset_by_index_element(0, 'pattern')
         else:
@@ -1098,15 +1066,13 @@ class FindSegmentApplyText(object):
 
     def load_find(self):
         """Load the first preset's search term or use the default pattern."""
-
         if self.presets_xml_root.findall('preset'):
             self.find = self.load_preset_by_index_element(0, 'find')
         else:
             self.find = ''
 
     def load_presets(self):
-        """Load preset file if preset and store XML tree & root"""
-
+        """Load preset file if preset and store XML tree & root."""
         if os.path.isfile(self.presets_xml):
             self.presets_xml_tree = et.parse(self.presets_xml)
         else:
@@ -1117,7 +1083,6 @@ class FindSegmentApplyText(object):
 
     def find_segments(self):
         """Assemble list of all PySegments in selected Sequences."""
-
         self.message('Scanning for segments...')
 
         for sequence in self.selection:
@@ -1136,7 +1101,6 @@ class FindSegmentApplyText(object):
 
     def generate_segment_tokens(self, segment):
         """Populate the token list."""
-
         self.segment_tokens['am/pm'] = [
                 '<pp>', self.now.strftime('%p').lower()]
         self.segment_tokens['AM/PM'] = [
@@ -1164,7 +1128,6 @@ class FindSegmentApplyText(object):
 
     def resolve_tokens(self):
         """Replace tokens with values."""
-
         result = self.pattern
 
         for token, values in self.segment_tokens.items():
@@ -1175,12 +1138,10 @@ class FindSegmentApplyText(object):
 
     def assemble_filename(self):
         """Assemble finished filename for row in the Table."""
-
         return os.path.join(self.path, self.resolve_tokens())
 
     def apply_text_fx_to_segment(self, segment, text_setup):
         """Apply Text TimelineFX to segment, then load setup."""
-
         for effect in segment.effects:
             if effect.type == 'Text':
                 flame.delete(effect)
@@ -1205,7 +1166,6 @@ class FindSegmentApplyText(object):
 
         def duplicate_check():
             """Check that preset to be saved would not be a duplicate."""
-
             duplicate = False
             preset_name = self.line_edit_preset_name.text()
 
@@ -1217,7 +1177,6 @@ class FindSegmentApplyText(object):
 
         def save_preset():
             """Save new preset to XML file."""
-
             new_preset = et.Element('preset', name=self.line_edit_preset_name.text())
             new_path = et.SubElement(new_preset, 'path')
             new_path.text = self.path
@@ -1241,7 +1200,6 @@ class FindSegmentApplyText(object):
 
         def overwrite_preset():
             """Replace pattern in presets XML tree then save to XML file."""
-
             preset_name = self.line_edit_preset_name.text()
 
             for preset in self.presets_xml_root.findall('preset'):
@@ -1262,14 +1220,12 @@ class FindSegmentApplyText(object):
 
         def sort_presets():
             """Alphabetically sort presets by name attribute."""
-
             self.presets_xml_root[:] = sorted(
                 self.presets_xml_root,
                 key=lambda child: (child.tag, child.get('name')))
 
         def save_button():
             """Triggered when the Save button at the bottom is pressed."""
-
             duplicate = duplicate_check()
 
             if duplicate:
@@ -1294,7 +1250,6 @@ class FindSegmentApplyText(object):
 
         def cancel_button():
             """Triggered when the Cancel button at the bottom is pressed."""
-
             self.save_window.close()
 
         self.save_window = QtWidgets.QWidget()
@@ -1352,7 +1307,6 @@ class FindSegmentApplyText(object):
 
         def get_selected_preset():
             """Get preset that should be displayed or return empty string."""
-
             try:
                 selected_preset = self.presets_xml_root.findall('preset')[0].get('name')
             except IndexError:  # if findall() returns empty list
@@ -1361,8 +1315,7 @@ class FindSegmentApplyText(object):
             return selected_preset
 
         def get_preset_names():
-            """Return just the names of the presets """
-
+            """Return just the names of the presets."""
             try:
                 preset_names = [
                     preset.get('name') for preset in
@@ -1374,7 +1327,6 @@ class FindSegmentApplyText(object):
 
         def update_preset():
             """Update fields when preset is changed."""
-
             preset_name = self.btn_preset.text()
 
             if preset_name:  # might be empty str if all presets were deleted
@@ -1388,7 +1340,6 @@ class FindSegmentApplyText(object):
 
         def preset_delete_button():
             """Triggered when the Delete button on the Preset line is pressed."""
-
             if FlameMessageWindow(
                     'Confirm Operation', 'confirm', 'Are you sure want to'
                     + ' permanently delete this preset?' + '<br/>' + 'This operation'
@@ -1412,12 +1363,10 @@ class FindSegmentApplyText(object):
 
         def preset_save_button():
             """Triggered when the Save button the Presets line is pressed."""
-
             self.save_preset_window()
 
         def okay_button():
             """Close window and process the artist's selected selection."""
-
             self.window.close()
 
             row_data = self.segments_table.get_selected_row_data()
@@ -1450,13 +1399,11 @@ class FindSegmentApplyText(object):
 
         def close_button():
             """Close the window."""
-
             self.window.close()
             self.message('Window closed!')
 
         def filter_table():
             """Updates the table when anything is typed in the Find bar."""
-
             for num in range(self.segments_table.rowCount()):
                 if self.find in self.segments_table.get_data_by_row_number(num)[2]:
                     self.segments_table.showRow(num)
@@ -1465,14 +1412,12 @@ class FindSegmentApplyText(object):
 
         def update_filename_column():
             """Update the filename column when the filename line edit is changed."""
-
             for count, segment in enumerate(self.segments):
                 self.generate_segment_tokens(segment)
                 self.segments_table.add_item(count, 5, self.assemble_filename())
 
         def verify_filename_column_exists():
             """Check if filename for text setup exists, if not, color cell text red."""
-
             for row in range(self.segments_table.rowCount()):
                 if not os.path.isfile(
                         self.segments_table.get_data_by_row_number(row)[5]):
@@ -1481,13 +1426,11 @@ class FindSegmentApplyText(object):
 
         def find_changed():
             """Everything to refresh when the find line edit is changed."""
-
             self.find = self.find_line_edit.text()
             filter_table()
 
         def path_changed():
             """Everything to refresh when the path line edit is changed."""
-
             self.path = self.path_line_edit.text()
             update_filename_column()
             self.segments_table.resizeColumnsToContents()
@@ -1495,7 +1438,6 @@ class FindSegmentApplyText(object):
 
         def pattern_changed():
             """Everything to refresh when the pattern line edit is changed."""
-
             self.pattern = self.pattern_line_edit.text()
             update_filename_column()
             self.segments_table.resizeColumnsToContents()
@@ -1503,7 +1445,6 @@ class FindSegmentApplyText(object):
 
         def find_toggle():
             """ """
-
             if self.find:
                 self.btn_find_segment.setChecked(True)
                 self.find_line_edit.setEnabled(True)
@@ -1513,7 +1454,6 @@ class FindSegmentApplyText(object):
 
         def find_segment_button():
             """ """
-
             if not self.find_line_edit.isEnabled():
                 self.find = self.find_line_edit.text()
                 self.find_line_edit.setEnabled(True)
@@ -1524,7 +1464,6 @@ class FindSegmentApplyText(object):
 
         def populate_table():
             """Fill in the table."""
-
             for count, segment in enumerate(self.segments):
                 self.generate_segment_tokens(segment)
                 self.segments_table.add_item(
@@ -1651,7 +1590,6 @@ class FindSegmentApplyText(object):
 
 def scope_timeline(selection):
     """Filter for only PyClips."""
-
     for item in selection:
         if isinstance(item, flame.PyClip):
             return True
@@ -1660,7 +1598,6 @@ def scope_timeline(selection):
 
 def get_media_panel_custom_ui_actions():
     """Python hook to add custom right click menu."""
-
     return [{'name': 'Apply...',
              'actions': [{'name': 'Text TimelineFX to Segments',
                           'isVisible': scope_timeline,
