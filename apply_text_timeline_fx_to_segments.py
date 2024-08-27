@@ -33,7 +33,6 @@ To Install:
     /opt/Autodesk/user/<user name>/python
 '''
 
-from __future__ import print_function
 import os
 import re
 import datetime as dt
@@ -45,7 +44,7 @@ from PySide2 import QtGui
 from PySide2 import QtWidgets
 
 TITLE = 'Apply Text TimelineFX to Segments'
-VERSION_INFO = (1, 5, 3)
+VERSION_INFO = (1, 5, 3, 'dev')
 VERSION = '.'.join([str(num) for num in VERSION_INFO])
 TITLE_VERSION = '{} v{}'.format(TITLE, VERSION)
 MESSAGE_PREFIX = '[PYTHON HOOK]'
@@ -1667,5 +1666,5 @@ def get_media_panel_custom_ui_actions():
              'actions': [{'name': 'Text TimelineFX to Segments',
                           'isVisible': scope_timeline,
                           'execute': FindSegmentApplyText,
-                          'minimumVersion': '2021.1'}]
+                          'minimumVersion': '2022'}]
             }]
