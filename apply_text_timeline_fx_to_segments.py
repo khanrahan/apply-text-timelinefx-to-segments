@@ -33,15 +33,14 @@ To Install:
     /opt/Autodesk/user/<user name>/python
 '''
 
+import datetime as dt
 import os
 import re
-import datetime as dt
 import xml.etree.ElementTree as et
 from functools import partial
+
 import flame
-from PySide2 import QtCore
-from PySide2 import QtGui
-from PySide2 import QtWidgets
+from PySide2 import QtCore, QtGui, QtWidgets
 
 TITLE = 'Apply Text TimelineFX to Segments'
 VERSION_INFO = (1, 5, 3, 'dev')
