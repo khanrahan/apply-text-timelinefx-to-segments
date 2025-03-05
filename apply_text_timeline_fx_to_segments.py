@@ -2,13 +2,13 @@
 Script Name: Apply Text TimelineFX to Segments
 Written By: Kieran Hanrahan
 
-Script Version: 2.0.0
-Flame Version: 2021.1
+Script Version: 3.0.0
+Flame Version: 2025
 
 URL: http://github.com/khanrahan/apply-text-timelinefx-to-segments
 
 Creation Date: 06.23.23
-Update Date: 08.26.24
+Update Date: 03.04.25
 
 Description:
 
@@ -46,13 +46,14 @@ import flame
 from PySide6 import QtCore, QtGui, QtWidgets
 
 TITLE = 'Apply Text TimelineFX to Segments'
-VERSION_INFO = (2, 0, 0)
+VERSION_INFO = (3, 0, 0)
 VERSION = '.'.join([str(num) for num in VERSION_INFO])
 TITLE_VERSION = f'{TITLE} v{VERSION}'
 MESSAGE_PREFIX = '[PYTHON]'
 
 DEFAULT_PATH = '/opt/Autodesk/project'
 DEFAULT_PATTERN = '<project>/text/flame/<name>.ttg'
+PRESET_FOLDER = '~/.config/apply-text-timelinefx-to-segments'
 XML = 'apply_text_timeline_fx_to_segments.xml'
 
 
@@ -985,7 +986,8 @@ class FindSegmentApplyText:
         self.message(f'Script called from {__file__}')
 
         # Load presets
-        self.presets_xml = os.path.join(os.path.dirname(__file__), XML)
+        self.presets_xml_folder = os.path.expanduser(PRESET_FOLDER)
+        self.presets_xml = os.path.join(self.presets_xml_folder, XML)
         self.presets_xml_tree = ''
         self.presets_xml_root = ''
         self.load_presets()
@@ -1181,6 +1183,22 @@ class FindSegmentApplyText:
 
             return duplicate
 
+        def check_preset_folder():
+            """Check that destination folder for preset XML file is available."""
+            result = False
+
+            if os.path.exists(self.presets_xml_folder):
+                result = True
+            else:
+                try:
+                    os.makedirs(self.presets_xml_folder)
+                    result = True
+                except OSError:
+                    FlameMessageWindow(
+                        'Error', 'error',
+                        f'Could not create {self.presets_xml_folder}')
+            return result
+
         def save_preset():
             """Save new preset to XML file."""
             new_preset = et.Element('preset', name=self.line_edit_preset_name.text())
@@ -1194,16 +1212,17 @@ class FindSegmentApplyText:
             self.presets_xml_root.append(new_preset)
             sort_presets()
 
-            try:
-                self.presets_xml_tree.write(self.presets_xml)
+            if check_preset_folder():
+                try:
+                    self.presets_xml_tree.write(self.presets_xml)
 
-                self.message(f'{self.line_edit_preset_name.text()} preset saved to ' +
-                             f'{self.presets_xml}')
+                    self.message(f'{self.line_edit_preset_name.text()} preset saved to ' +
+                                 f'{self.presets_xml}')
 
-            except OSError:
-                FlameMessageWindow(
-                    'Error', 'error',
-                    f'Check permissions on {os.path.dirname(__file__)}')
+                except OSError:
+                    FlameMessageWindow(
+                        'Error', 'error',
+                        f'Check permissions on {self.presets_xml}')
 
         def overwrite_preset():
             """Replace pattern in presets XML tree then save to XML file."""
@@ -1223,7 +1242,7 @@ class FindSegmentApplyText:
             except OSError:
                 FlameMessageWindow(
                     'Error', 'error',
-                    f'Check permissions on {os.path.dirname(__file__)}')
+                    f'Check permissions on {self.presets_xml}')
 
         def sort_presets():
             """Alphabetically sort presets by name attribute."""
