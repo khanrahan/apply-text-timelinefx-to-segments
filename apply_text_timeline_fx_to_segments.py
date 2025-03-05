@@ -40,7 +40,7 @@ import xml.etree.ElementTree as et
 from functools import partial
 
 import flame
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 TITLE = 'Apply Text TimelineFX to Segments'
 VERSION_INFO = (2, 0, 0)
@@ -337,7 +337,7 @@ class FlameMessageWindow(QtWidgets.QDialog):
         self.setMaximumSize(QtCore.QSize(500, 330))
         self.setStyleSheet('background-color: rgb(36, 36, 36)')
 
-        resolution = QtWidgets.QDesktopWidget().screenGeometry()
+        resolution = QtGui.QGuiApplication.primaryScreen().availableGeometry()
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
                   (resolution.height() / 2) - (self.frameSize().height() / 2))
 
@@ -508,7 +508,7 @@ class FlameProgressWindow(QtWidgets.QDialog):
         self.setMaximumSize(QtCore.QSize(500, 330))
         self.setStyleSheet('background-color: rgb(36, 36, 36)')
 
-        resolution = QtWidgets.QDesktopWidget().screenGeometry()
+        resolution = QtGui.QGuiApplication.primaryScreen().availableGeometry()
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
                   (resolution.height() / 2) - (self.frameSize().height() / 2))
 
@@ -1259,7 +1259,7 @@ class FindSegmentApplyText:
         self.save_window.setWindowTitle('Save Preset As...')
 
         # Center Window
-        resolution = QtWidgets.QDesktopWidget().screenGeometry()
+        resolution = QtGui.QGuiApplication.primaryScreen().availableGeometry()
 
         self.save_window.move(
             (resolution.width() / 2) - (self.save_window_x / 2),
@@ -1290,7 +1290,7 @@ class FindSegmentApplyText:
         self.save_hbox.addWidget(self.save_btn_save)
 
         self.save_vbox = QtWidgets.QVBoxLayout()
-        self.save_vbox.setMargin(20)
+        self.save_vbox.setContentsMargins(20, 20, 20, 20)
         self.save_vbox.addLayout(self.save_grid)
         self.save_vbox.addSpacing(20)
         self.save_vbox.addLayout(self.save_hbox)
@@ -1491,7 +1491,7 @@ class FindSegmentApplyText:
         self.window.setFocusPolicy(QtCore.Qt.StrongFocus)
 
         # Center Window
-        resolution = QtWidgets.QDesktopWidget().screenGeometry()
+        resolution = QtGui.QGuiApplication.primaryScreen().availableGeometry()
 
         self.window.move(
                 (resolution.width() / 2) - (self.window.frameSize().width() / 2),
@@ -1595,5 +1595,5 @@ def get_media_panel_custom_ui_actions():
              'actions': [{'name': 'Text TimelineFX to Segments',
                           'isVisible': scope_timeline,
                           'execute': FindSegmentApplyText,
-                          'minimumVersion': '2022'}]
+                          'minimumVersion': '2025'}]
             }]
