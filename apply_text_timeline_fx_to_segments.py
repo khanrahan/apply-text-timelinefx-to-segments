@@ -1571,11 +1571,11 @@ class FindSegmentApplyText:
         self.hbox2.addWidget(self.ok_btn)
 
         self.vbox = QtWidgets.QVBoxLayout()
-        self.vbox.setMargin(20)
+        self.vbox.setContentsMargins(20, 20, 20, 20)
         self.vbox.addLayout(self.grid)
-        self.vbox.insertSpacing(1, 20)
+        self.vbox.addSpacing(20)
         self.vbox.addLayout(self.hbox)
-        self.vbox.insertSpacing(3, 20)
+        self.vbox.addSpacing(20)
         self.vbox.addLayout(self.hbox2)
 
         self.window.setLayout(self.vbox)
