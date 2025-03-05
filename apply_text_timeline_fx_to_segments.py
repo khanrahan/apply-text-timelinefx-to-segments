@@ -1138,8 +1138,13 @@ class FindSegmentApplyText:
         return result
 
     def assemble_filename(self):
-        """Assemble finished filename for row in the Table."""
-        return os.path.join(self.path, self.resolve_tokens())
+        """Assemble finished filename for row in the Table.
+
+        The starred expression is for if the artist has the Pattern field starting with
+        a slash, therefore an absolute path.  os.path.join will not work on 2 absolute
+        paths.
+        """
+        return os.path.join(self.path, *self.resolve_tokens().split(os.sep))
 
     def apply_text_fx_to_segment(self, segment, text_setup):
         """Apply Text TimelineFX to segment, then load setup."""
